@@ -15,6 +15,6 @@ public class BibliotekaZtpaiApplication {
 
 	@GetMapping
 	public String hello(){
-		return "Hello";
+		return "Strona Biblioteki";
 	}
 }
