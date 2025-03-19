@@ -26,4 +26,22 @@ public class BookController {
         return bookService.getBookById(bookId);
     }
 
+    @GetMapping("/mybooks")
+    public ResponseEntity<Object> getUserBooks() {
+        return bookService.getUserBooks();
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> addBook(){
+        return bookService.addBook(4, "Lalka", "4", "44", "dostępne");
+    }
+
+    @PutMapping("/{bookId}")
+    public ResponseEntity<Object> updateBook(@PathVariable int bookId){
+        return bookService.updateBook(bookId, "Faraon", "4", "44", "dostępne");
+    }
+    @DeleteMapping("/{bookId}")
+    public ResponseEntity<Object> deleteBook(@PathVariable int bookId){
+        return bookService.deleteBook(bookId);
+    }
 }
