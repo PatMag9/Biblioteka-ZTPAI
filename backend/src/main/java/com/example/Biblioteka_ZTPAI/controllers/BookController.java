@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+
     private final BookService bookService;
 
     @Autowired
@@ -26,14 +27,14 @@ public class BookController {
         return bookService.getBookById(bookId);
     }
 
-    @GetMapping("/mybooks")
-    public ResponseEntity<Object> getUserBooks() {
-        return bookService.getUserBooks();
-    }
-
     @PostMapping
-    public ResponseEntity<Object> addBook(){
-        return bookService.addBook(4, "Lalka", "4", "44", "dostępne");
+    public ResponseEntity<Object> addBook(
+            @RequestParam String title,
+            @RequestParam Integer idGenre,
+            @RequestParam String cover,
+            @RequestParam String description
+    ) {
+        return bookService.addBook(title, idGenre, cover, description);
     }
 
     @PutMapping("/{bookId}")
