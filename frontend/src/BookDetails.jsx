@@ -21,7 +21,7 @@ function BookDetails() {
         <div className="container">
             <div className="book-details">
                 <h1>{book.title}</h1>
-                <p><strong>Gatunek:</strong> {book.id_genre}</p>
+                <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
                 <p><strong>Opis:</strong> {book.description}</p>
                 {book.cover && <img src={book.cover} alt="cover_art" width="200" />}
                 <br />
