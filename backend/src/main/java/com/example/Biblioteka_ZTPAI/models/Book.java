@@ -10,17 +10,19 @@ public class Book {
     private Integer id_book;
 
     private String title;
-    private Integer id_genre;
+    @ManyToOne
+    @JoinColumn(name = "id_genre", referencedColumnName = "id_genre")
+    private Genre genre;
     private String cover;
     @Column(columnDefinition = "TEXT")
     private String description;
 
     public Book() {
     }
-    public Book(Integer id_book, String title, Integer id_genre, String cover, String description) {
+    public Book(Integer id_book, String title, Genre genre, String cover, String description) {
         this.id_book = id_book;
         this.title = title;
-        this.id_genre = id_genre;
+        this.genre = genre;
         this.cover = cover;
         this.description = description;
     }
@@ -41,12 +43,12 @@ public class Book {
         this.title = title;
     }
 
-    public Integer getId_genre() {
-        return id_genre;
+    public Genre getGenre() {
+        return genre;
     }
 
-    public void setId_genre(Integer id_genre) {
-        this.id_genre = id_genre;
+    public void setGenre(Genre genre) {
+        this.genre = genre;
     }
 
     public String getCover() {
