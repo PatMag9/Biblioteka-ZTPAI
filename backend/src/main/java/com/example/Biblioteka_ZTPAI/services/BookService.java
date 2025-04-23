@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final Map<Integer, Map<String, String>> books = new HashMap<>();
     @Autowired
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
@@ -31,14 +31,41 @@ public class BookService {
         if (book.isPresent()) {
             return ResponseEntity.ok(book.get());
         } else {
-            return ResponseEntity.status(404)
-                    .body(Map.of("error", "Book not found"));
+            throw new NoSuchElementException("Book not found");
         }
     }
 
     public ResponseEntity<Object> addBook(Book book) {
         bookRepository.save(book);
         return ResponseEntity.status(HttpStatus.CREATED).body(book);
+    }
+
+    public ResponseEntity<Object> updateBook(int bookId, Book updatedBook) {
+        Optional<Book> existingBookOpt = bookRepository.findById(bookId);
+
+        if (existingBookOpt.isPresent()) {
+            Book existingBook = existingBookOpt.get();
+            existingBook.setTitle(updatedBook.getTitle());
+            existingBook.setGenre(updatedBook.getGenre());
+            existingBook.setCover(updatedBook.getCover());
+            existingBook.setDescription(updatedBook.getDescription());
+
+            bookRepository.save(existingBook);
+            return ResponseEntity.ok(existingBook);
+        } else {
+            throw new NoSuchElementException("Book not found");
+        }
+    }
+
+    public ResponseEntity<Object> deleteBook(int bookId) {
+        Optional<Book> bookOpt = bookRepository.findById(bookId);
+
+        if (bookOpt.isPresent()) {
+            bookRepository.deleteById(bookId);
+            return ResponseEntity.noContent().build();
+        } else {
+            throw new NoSuchElementException("Book not found");
+        }
     }
 
 }
