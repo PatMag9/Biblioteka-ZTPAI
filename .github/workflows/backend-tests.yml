@@ -12,6 +12,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5439:5432
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: docker
+          POSTGRES_PASSWORD: docker
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: backend
@@ -26,5 +41,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build and run tests with Maven
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..15}; do
+            nc -z localhost 5439 && echo "Postgres is up!" && break
+            echo "Waiting for Postgres..." && sleep 2
+          done
+
+      - name: Run tests with Maven
         run: mvn clean test
