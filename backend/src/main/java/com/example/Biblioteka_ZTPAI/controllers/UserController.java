@@ -18,13 +18,4 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getProfile() {
-        return userService.getProfile();
-    }
-
-    @PutMapping("/edit")
-    public ResponseEntity<Object> editProfile(){
-        return userService.editProfile();
-    }
 }
