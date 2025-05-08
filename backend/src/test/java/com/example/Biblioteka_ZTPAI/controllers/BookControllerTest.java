@@ -34,6 +34,7 @@ public class BookControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    private final String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ2NzExOTY3LCJleHAiOjE3NDY3MTM0MDd9.VVf1G8irREsr9t-jbQXUTgteFtvOZDze_XVeGvTh8ss";
 
     private Genre getSampleGenre() {
         return new Genre(1, "Fantasy");
@@ -48,7 +49,8 @@ public class BookControllerTest {
         Mockito.when(bookService.getBooks())
                 .thenReturn(ResponseEntity.ok(Collections.singletonList(getSampleBook())));
 
-        mockMvc.perform(get("/api/books"))
+        mockMvc.perform(get("/api/books")
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Test Book"))
                 .andExpect(jsonPath("$[0].genre.genre_name").value("Fantasy"));
@@ -60,7 +62,8 @@ public class BookControllerTest {
         Mockito.when(bookService.getBookById(1))
                 .thenReturn(ResponseEntity.ok(book));
 
-        mockMvc.perform(get("/api/books/{bookId}", 1))
+        mockMvc.perform(get("/api/books/{bookId}", 1)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id_book").value(1))
                 .andExpect(jsonPath("$.title").value("Test Book"))
@@ -76,6 +79,7 @@ public class BookControllerTest {
                 .thenReturn(ResponseEntity.ok(savedBook));
 
         mockMvc.perform(post("/api/books")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newBook)))
                 .andExpect(status().isOk())
@@ -89,7 +93,8 @@ public class BookControllerTest {
         Mockito.when(bookService.getBookById(99999))
                 .thenReturn(ResponseEntity.notFound().build());
 
-        mockMvc.perform(get("/api/books/{bookId}", 99999))
+        mockMvc.perform(get("/api/books/{bookId}", 99999)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());
     }
 
@@ -101,6 +106,7 @@ public class BookControllerTest {
                 .thenReturn(ResponseEntity.badRequest().body("Invalid book data"));
 
         mockMvc.perform(post("/api/books")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidBook)))
                 .andExpect(status().isBadRequest())
@@ -115,6 +121,7 @@ public class BookControllerTest {
                 .thenReturn(ResponseEntity.ok(updated));
 
         mockMvc.perform(put("/api/books/{bookId}", 1)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isOk())
@@ -130,6 +137,7 @@ public class BookControllerTest {
                 .thenReturn(ResponseEntity.notFound().build());
 
         mockMvc.perform(put("/api/books/{bookId}", 99)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isNotFound());
@@ -140,7 +148,8 @@ public class BookControllerTest {
         Mockito.when(bookService.deleteBook(1))
                 .thenReturn(ResponseEntity.noContent().build());
 
-        mockMvc.perform(delete("/api/books/{bookId}", 1))
+        mockMvc.perform(delete("/api/books/{bookId}", 1)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
 
@@ -149,7 +158,8 @@ public class BookControllerTest {
         Mockito.when(bookService.deleteBook(999))
                 .thenReturn(ResponseEntity.notFound().build());
 
-        mockMvc.perform(delete("/api/books/{bookId}", 999))
+        mockMvc.perform(delete("/api/books/{bookId}", 999)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());
     }
 }

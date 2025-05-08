@@ -42,8 +42,11 @@ class GenreControllerTest {
 
         when(genreService.getGenres()).thenReturn(genres);
 
+        String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ2NzExOTY3LCJleHAiOjE3NDY3MTM0MDd9.VVf1G8irREsr9t-jbQXUTgteFtvOZDze_XVeGvTh8ss";
+
         // Act & Assert
         mockMvc.perform(get("/api/genres")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
