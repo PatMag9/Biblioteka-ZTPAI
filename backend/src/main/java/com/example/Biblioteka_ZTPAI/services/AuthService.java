@@ -43,4 +43,16 @@ public class AuthService {
         return new AuthenticationResponse(jwtToken);
     }
 
+    public AuthenticationResponse login(LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return new AuthenticationResponse(jwtToken);
+    }
 }
