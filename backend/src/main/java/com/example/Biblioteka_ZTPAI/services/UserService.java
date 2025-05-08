@@ -1,27 +1,27 @@
 package com.example.Biblioteka_ZTPAI.services;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.example.Biblioteka_ZTPAI.models.User;
+import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class UserService {
-    private static final Map<Integer, Map<String, String>> users = new
-            HashMap<>() {{
-                put(1, Map.of("id", "1", "nickname", "Patmag", "info","asd", "favourite_book","Pan Tadeusz"));
-                put(2, Map.of("id", "1", "nickname", "Jankow", "info","fgh", "favourite_book","Krzyżacy"));
-                put(3, Map.of("id", "1", "nickname", "PioNow", "info","jkl", "favourite_book","Romeo i Julia"));
-            }};
+    private final UserRepository userRepository;
 
-    public ResponseEntity<Object> getProfile() {
-        return ResponseEntity.ok(users.get(1).values());
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public ResponseEntity<Object> editProfile(){
-        //todo
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @Transactional(readOnly = true)
+    public User findUserWithRoles(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
