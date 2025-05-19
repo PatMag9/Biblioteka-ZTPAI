@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers("/api/auth/**").permitAll();
+                    auth.requestMatchers("/api/auth/**", "/api/docs/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement()
@@ -38,7 +38,6 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                //.oauth2Login(Customizer.withDefaults())
                 .build();
     }
 }

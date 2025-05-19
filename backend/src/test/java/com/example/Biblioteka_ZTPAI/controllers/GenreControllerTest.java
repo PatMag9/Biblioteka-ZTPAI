@@ -1,7 +1,10 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
 import com.example.Biblioteka_ZTPAI.models.Genre;
+import com.example.Biblioteka_ZTPAI.models.User;
+import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
 import com.example.Biblioteka_ZTPAI.services.GenreService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -10,11 +13,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -24,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class GenreControllerTest {
+public class GenreControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,10 +37,30 @@ class GenreControllerTest {
     @MockBean
     private GenreService genreService;
 
+    @MockBean
+    private UserRepository userRepository;
+
+    private User testUser;
+
+    @BeforeEach
+    void setup() {
+        this.testUser = createTestUser();
+    }
+
+    private User createTestUser() {
+        User user = new User();
+        user.setId(1);
+        user.setUsername("ccc");
+        user.setEmail("user@user.com");
+        user.setPassword("user");
+
+        when(userRepository.findByUsername("ccc")).thenReturn(Optional.of(user));
+
+        return user;
+    }
     @Test
     @DisplayName("GET /api/genres - should return list of genres")
     void getGenres_ShouldReturnGenresList() throws Exception {
-        // Arrange
         Genre genre1 = new Genre(1, "Fantasy");
         Genre genre2 = new Genre(2, "Science Fiction");
         List<Genre> genres = Arrays.asList(genre1, genre2);
