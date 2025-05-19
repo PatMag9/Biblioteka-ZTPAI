@@ -1,5 +1,6 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
+import com.example.Biblioteka_ZTPAI.configs.JwtService;
 import com.example.Biblioteka_ZTPAI.models.Genre;
 import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
@@ -37,14 +38,19 @@ public class GenreControllerTest {
     @MockBean
     private GenreService genreService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @MockBean
     private UserRepository userRepository;
 
     private User testUser;
+    private String jwtToken;
 
     @BeforeEach
     void setup() {
         this.testUser = createTestUser();
+        this.jwtToken = generateTokenForUser(testUser);
     }
 
     private User createTestUser() {
@@ -58,6 +64,17 @@ public class GenreControllerTest {
 
         return user;
     }
+
+    private String generateTokenForUser(User user) {
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+
+        return jwtService.generateToken(userDetails);
+    }
+
     @Test
     @DisplayName("GET /api/genres - should return list of genres")
     void getGenres_ShouldReturnGenresList() throws Exception {
@@ -67,9 +84,6 @@ public class GenreControllerTest {
 
         when(genreService.getGenres()).thenReturn(genres);
 
-        String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ2NzExOTY3LCJleHAiOjE3NDY3MTM0MDd9.VVf1G8irREsr9t-jbQXUTgteFtvOZDze_XVeGvTh8ss";
-
-        // Act & Assert
         mockMvc.perform(get("/api/genres")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))

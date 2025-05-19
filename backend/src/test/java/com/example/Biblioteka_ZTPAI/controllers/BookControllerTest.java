@@ -1,5 +1,6 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
+import com.example.Biblioteka_ZTPAI.configs.JwtService;
 import com.example.Biblioteka_ZTPAI.models.Book;
 import com.example.Biblioteka_ZTPAI.models.Genre;
 import com.example.Biblioteka_ZTPAI.models.User;
@@ -40,16 +41,20 @@ public class BookControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-    private final String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzQ2NzExOTY3LCJleHAiOjE3NDY3MTM0MDd9.VVf1G8irREsr9t-jbQXUTgteFtvOZDze_XVeGvTh8ss";
 
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtService jwtService;
+
     private User testUser;
+    private String jwtToken;
 
     @BeforeEach
     void setup() {
         this.testUser = createTestUser();
+        this.jwtToken = generateTokenForUser(testUser);
     }
 
     private User createTestUser() {
@@ -62,6 +67,16 @@ public class BookControllerTest {
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 
         return user;
+    }
+
+    private String generateTokenForUser(com.example.Biblioteka_ZTPAI.models.User user) {
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+
+        return jwtService.generateToken(userDetails);
     }
 
     private Genre getSampleGenre() {
