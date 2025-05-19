@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./styles.css";
+import {Link, useNavigate} from "react-router-dom";
+import "./CSS/styles.css";
 
 const API_URL = "http://localhost:8080/api/books";
 const GENRE_API_URL = "http://localhost:8080/api/genres";
 
 function BooksList() {
+    const navigate = useNavigate();
     const [books, setBooks] = useState([]);
     const [newBook, setNewBook] = useState({
         title: "",
@@ -16,9 +17,12 @@ function BooksList() {
     const [genres, setGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Funkcja pobierająca książki
     const fetchBooks = () => {
-        fetch(API_URL)
+        fetch(API_URL, {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+        })
             .then((response) => response.json())
             .then((data) => {
                 setBooks(data);
@@ -27,9 +31,12 @@ function BooksList() {
             .catch((error) => console.error("Błąd:", error));
     };
 
-    // Funkcja pobierająca gatunki
     const fetchGenres = () => {
-        fetch(GENRE_API_URL)
+        fetch(GENRE_API_URL, {
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+        })
             .then((response) => response.json())
             .then((data) => setGenres(data))
             .catch((error) => console.error("Błąd:", error));
@@ -40,7 +47,6 @@ function BooksList() {
         fetchGenres();
     }, []);
 
-    // Obsługa formularza dodawania książki
     const handleChange = (e) => {
         if (e.target.name === "genre") {
             const selectedGenre = genres.find((genre) => genre.id_genre === parseInt(e.target.value));
@@ -54,7 +60,10 @@ function BooksList() {
         e.preventDefault();
         fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
             body: JSON.stringify(newBook),
         })
             .then((res) => res.json())
