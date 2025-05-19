@@ -17,6 +17,31 @@ function BooksList() {
     const [genres, setGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    useEffect(() => {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+            navigate("/");
+            return;
+        }
+
+        const isTokenExpired = (token) => {
+            try {
+                const payload = JSON.parse(atob(token.split(".")[1]));
+                return payload.exp * 1000 < Date.now();
+            } catch {
+                return true;
+            }
+        };
+
+        if (isTokenExpired(token)) {
+            localStorage.removeItem("jwtToken");
+            navigate("/");
+        }
+
+        fetchBooks();
+        fetchGenres();
+    }, [navigate]);
+
     const fetchBooks = () => {
         fetch(API_URL, {
             headers: {
