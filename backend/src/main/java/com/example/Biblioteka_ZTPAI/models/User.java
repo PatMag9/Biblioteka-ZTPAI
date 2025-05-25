@@ -1,16 +1,23 @@
 package com.example.Biblioteka_ZTPAI.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -29,10 +36,6 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-//Constructors
-    public User() {
-    }
-
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
@@ -45,46 +48,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
     }
-//Getters, Setters
-    public Integer getId() {
-        return id_user;
-    }
-    public void setId(Integer id_user) {
-        this.id_user = id_user;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    // Dodawanie i usuwanie ról
 
     public void addRole(Role role) {
         this.roles.add(role);
@@ -96,13 +59,22 @@ public class User implements UserDetails {
         role.getUsers().remove(this);
     }
 
-//UserDetails
-@Override
-public Collection<? extends GrantedAuthority> getAuthorities() {
-    return roles.stream()
-            .map(role -> (GrantedAuthority) () -> "ROLE_" + role.getRoleName().toUpperCase())
-            .collect(Collectors.toSet());
-}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> (GrantedAuthority) () -> "ROLE_" + role.getRoleName().toUpperCase())
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getUsername(){
+        return email;
+    }
+
+    @Override
+    public String getPassword(){
+        return password;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
