@@ -59,12 +59,12 @@ public class BookControllerTest {
 
     private User createTestUser() {
         User user = new User();
-        user.setId(1);
+        user.setId_user(1);
         user.setUsername("user");
         user.setEmail("user@user.com");
         user.setPassword("user");
 
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("user")).thenReturn(Optional.of(user));
 
         return user;
     }
