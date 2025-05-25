@@ -53,12 +53,12 @@ public class GenreControllerTest {
 
     private User createTestUser() {
         User user = new User();
-        user.setid_user(1);
-        user.setUsername("ccc");
+        user.setId_user(1);
+        user.setUsername("user");
         user.setEmail("user@user.com");
         user.setPassword("user");
 
-        when(userRepository.findByEmail("ccc")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("user@user.com")).thenReturn(Optional.of(user));
 
         return user;
     }

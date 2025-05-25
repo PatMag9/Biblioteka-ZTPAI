@@ -63,7 +63,7 @@ public class BookControllerTest {
         user.setEmail("user@user.com");
         user.setPassword("user");
 
-        when(userRepository.findByEmail("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("user@user.com")).thenReturn(Optional.of(user));
 
         return user;
     }
