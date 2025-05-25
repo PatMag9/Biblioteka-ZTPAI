@@ -1,6 +1,7 @@
 package com.example.Biblioteka_ZTPAI.configs;
 
 import com.example.Biblioteka_ZTPAI.models.User;
+import com.example.Biblioteka_ZTPAI.services.JwtService;
 import com.example.Biblioteka_ZTPAI.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

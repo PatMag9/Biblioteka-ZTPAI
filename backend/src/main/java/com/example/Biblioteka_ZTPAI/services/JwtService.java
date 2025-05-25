@@ -1,4 +1,4 @@
-package com.example.Biblioteka_ZTPAI.configs;
+package com.example.Biblioteka_ZTPAI.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -43,7 +43,7 @@ public class JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+1000*60*24))
+                .expiration(new Date(System.currentTimeMillis()+1000*60*12))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -1,6 +1,5 @@
 package com.example.Biblioteka_ZTPAI.services;
 
-import com.example.Biblioteka_ZTPAI.configs.JwtService;
 import com.example.Biblioteka_ZTPAI.models.*;
 import com.example.Biblioteka_ZTPAI.repositories.RoleRepository;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
