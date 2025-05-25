@@ -9,6 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -19,19 +21,23 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = new User(
-                request.getUsername(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword()));
+        var user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(new HashSet<>())
+                .build();
 
         Role userRole = roleRepository.findByRoleName("USER")
-                .orElseThrow(() -> new RuntimeException("Rola 'USER' nie została znaleziona"));
+                .orElseThrow(() -> new RuntimeException("Could not find the 'USER' role"));
 
         user.addRole(userRole);
 
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
     public AuthenticationResponse login(LoginRequest request) {
@@ -44,6 +50,8 @@ public class AuthService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 }
