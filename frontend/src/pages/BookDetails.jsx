@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {useParams, Link, useNavigate} from "react-router-dom";
-import "../styles/styles.css";
+import "../styles/BookPages.css";
+import BookPageHeader from "../components/BookPageHeader.jsx";
+import BookPageCategories from "../components/BookPageCategories.jsx";
+
 
 const API_URL = "http://localhost:8080/api/books";
 
@@ -47,14 +50,29 @@ function BookDetails() {
 
     return (
         <div className="container">
-            <div className="book-details">
-                <h1>{book.title}</h1>
-                <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
-                <p><strong>Opis:</strong> {book.description}</p>
-                {book.cover && <img src={book.cover} alt="cover_art" width="200" />}
-                <br />
-                <Link to="/books" className="back-btn">Powrót do listy</Link>
-            </div>
+            <BookPageHeader/>
+            <main>
+                <h2>Katalog Biblioteki BiblioSolis</h2>
+                <BookPageCategories/>
+                <section className="book-list">
+                    <div className="book-page">
+                        <div className="book-info">
+                            <div className="book-cover">{book.cover && <img src={book.cover} alt="cover_art" />}</div>
+                            <div class="book-details">
+                                <p><strong>Tytuł: </strong>
+                                    <Link to={`/book/${book.id_book}`}>{book.title}</Link>
+                                </p>
+                                <p><strong>Autor/rzy:</strong>
+                                    {/* todo */}
+                                </p>
+                                <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
+                                <p><strong>Wydawnictwo:</strong> {/* todo */}</p>
+                                <p><strong>Status:</strong> {/* todo */}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
     );
 }

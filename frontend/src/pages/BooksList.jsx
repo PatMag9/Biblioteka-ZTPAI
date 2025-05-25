@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import "../styles/styles.css";
+import "../styles/BookPages.css";
+import BookPageHeader from "../components/BookPageHeader.jsx";
+import BookPageCategories from "../components/BookPageCategories.jsx";
+import BookPageNav from "../components/BookPageNav.jsx";
 
 const API_URL = "http://localhost:8080/api/books";
 const GENRE_API_URL = "http://localhost:8080/api/genres";
@@ -101,45 +104,41 @@ function BooksList() {
 
     return (
         <div className="container">
-            <h1>Lista Książek</h1>
-
-            <button className="refresh-btn" onClick={fetchBooks}>
-                Odśwież
-            </button>
-
-            {isLoading ? (
-                <p>Ładowanie książek...</p>
-            ) : (
-                <ul className="book-list">
-                    {books.map((book) => (
-                        <li key={book.id_book} className="book-item">
-                            <Link to={`/book/${book.id_book}`} className="details-link">
-                                {book.title}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            )}
-
-            <div className="book-form">
-                <h2>Dodaj książkę</h2>
-                <form onSubmit={handleSubmit}>
-                        <input type="text" name="title" placeholder="Tytuł" value={newBook.title} onChange={handleChange} required/>
-                        <input type="text" name="cover" placeholder="Okładka" value={newBook.cover} onChange={handleChange} required/>
-                        <textarea name="description" placeholder="Opis" value={newBook.description} onChange={handleChange} required/>
-                        <select name="genre" value={newBook.genre.id_genre || ""} onChange={handleChange} required>
-                            <option value="">Wybierz gatunek</option>
-                            {genres.map((genre) => (
-                                <option key={genre.id_genre} value={genre.id_genre}>
-                                    {genre.genre_name}
-                                </option>
-                            ))}
-                        </select>
-                    <button type="submit">Dodaj książkę</button>
-                </form>
-            </div>
+            <BookPageHeader/>
+            <main>
+                <h2>Katalog Biblioteki BiblioSolis</h2>
+                <BookPageCategories/>
+                <BookPageNav/>
+                <section className="book-list">
+                    {isLoading ? (
+                        <p>Ładowanie książek...</p>
+                    ) : (
+                        books.map(book => (
+                            <div className="book-card">
+                                <div className="book-cover">
+                                    <Link to={`/book/${book.id_book}`}>
+                                        {book.cover && <img src={book.cover} alt="cover_art" />}
+                                    </Link>
+                                </div>
+                                <div className="book-details">
+                                    <p><strong>Tytuł: </strong>
+                                        <Link to={`/book/${book.id_book}`}>{book.title}</Link>
+                                    </p>
+                                    <p><strong>Autor/rzy:</strong>
+                                        {/* todo */}
+                                    </p>
+                                    <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
+                                    <p><strong>Wydawnictwo:</strong> {/* todo */}</p>
+                                    <p><strong>Status:</strong> {/* todo */}</p>
+                                </div>
+                                <button className="reserve-button">Zarezerwuj</button>
+                            </div>
+                        ))
+                    )}
+                </section>
+            </main>
         </div>
-    );
+);
 }
 
 export default BooksList;
