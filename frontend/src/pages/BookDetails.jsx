@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {useParams, Link, useNavigate} from "react-router-dom";
-import "./CSS/styles.css";
+import "../styles/styles.css";
 
 const API_URL = "http://localhost:8080/api/books";
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './CSS/Login.css';
+import '../styles/Home.css';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -13,36 +13,41 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:8080/api/auth/login', {
-                username,
+                email,
                 password
             });
             const token = response.data.token;
             localStorage.setItem('jwtToken', token);
             navigate('/books');
         } catch (err) {
-            setError('Invalid username or password');
+            setError('Invalid email or password');
         }
     };
 
     return (
-        <div className="login-page">
+        <div className="home-page">
             <div className="logo-container">
-                <h1>BiblioSolis</h1>
+                <div className="logo">
+                    <img src="src/assets/logo.svg"/>
+                    <h1 className="banner">BiblioSolis</h1>
+                </div>
             </div>
-            <form className="login-form" onSubmit={handleLogin}>
+            <form className="home-actions" onSubmit={handleLogin}>
                 <input
+                    className="input-button"
                     type="text"
-                    placeholder="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
+                    className="input-button"
                     type="password"
                     placeholder="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Login</button>
+                <button className="home-redirect" type="submit">Login</button>
                 {error && <p className="error">{error}</p>}
             </form>
         </div>
