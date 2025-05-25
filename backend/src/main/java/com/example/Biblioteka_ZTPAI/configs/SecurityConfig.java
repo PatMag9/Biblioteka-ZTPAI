@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers("/api/auth/**", "/api/docs/**").permitAll();
+                    auth.requestMatchers("/api/auth/**", "/api/docs/**", "/test/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement()
