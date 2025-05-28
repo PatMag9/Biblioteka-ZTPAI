@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface BookCopyRepository extends JpaRepository<BookCopy, Integer> {
+    List<BookCopy> findAllByBook_IdBook(Integer bookId);
 }
