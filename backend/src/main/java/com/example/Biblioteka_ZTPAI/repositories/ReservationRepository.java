@@ -13,4 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
+    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.id_book_copy = :bookCopyId AND (r.endDate IS NULL OR r.endDate > CURRENT_TIMESTAMP)")
+    Optional<Reservation> findActiveReservationByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
 }

@@ -12,4 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
+    @Query("SELECT l FROM Loan l WHERE l.bookCopy.id_book_copy = :bookCopyId AND l.endDate IS NULL")
+    Optional<Loan> findActiveLoanByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
 }

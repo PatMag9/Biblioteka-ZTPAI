@@ -1,18 +1,46 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
+import com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO;
+import com.example.Biblioteka_ZTPAI.models.Loan;
+import com.example.Biblioteka_ZTPAI.models.Reservation;
+import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.services.CheckoutService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/checkout")
 public class CheckoutController {
     private final CheckoutService checkoutService;
 
-    @Autowired
-    public CheckoutController(CheckoutService checkoutService) {
-        this.checkoutService = checkoutService;
+    @GetMapping("/bookCopyStatus/{bookCopyId}")
+    public ResponseEntity<Map<String, Boolean>> getBookCopyStatus(
+            @PathVariable Integer bookCopyId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        boolean isReserved = checkoutService.isBookCopyReserved(bookCopyId);
+        boolean isReservedByUser = false;
+        boolean isLoaned = checkoutService.isBookCopyLoaned(bookCopyId);
+
+        if (isReserved) {
+            isReservedByUser = checkoutService.isReservedByUser(bookCopyId, userDetails.getUsername());
+        }
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("reserved", isReserved);
+        response.put("reservedByCurrentUser", isReservedByUser);
+        response.put("loaned", isLoaned);
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reservation/{bookId}")
