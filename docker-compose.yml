@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   db:
     container_name: postgres-db
@@ -28,6 +30,36 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - biblioteka-network
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: docker
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
+    ports:
+      - "8080:8080"
+    networks:
+      - biblioteka-network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
     networks:
       - biblioteka-network
 
