@@ -8,7 +8,7 @@ function BookPageNav(){
             <div className="page-numbers">
                 1
             </div>
-            <button className="next-page">></button>
+            <button className="next-page">n</button>
         </div>
     );
 }
