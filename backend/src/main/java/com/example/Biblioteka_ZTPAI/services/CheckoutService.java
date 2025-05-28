@@ -21,12 +21,24 @@ import java.util.Optional;
 @Service
 public class CheckoutService {
 
-    public ResponseEntity<Object> addReservation(int bookId){
-        //todo
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     private final BookCopyRepository bookCopyRepository;
     private final ReservationRepository reservationRepository;
     private final LoanRepository loanRepository;
+
+    public ResponseEntity<?> reserveBookCopy(Integer bookCopyId, User user) {
+        return bookCopyRepository.findById(bookCopyId)
+                .map(bookCopy -> {
+                    Reservation reservation = Reservation.builder()
+                            .bookCopy(bookCopy)
+                            .user(user)
+                            .start_date(LocalDateTime.now())
+                            .endDate(null)
+                            .build();
+                    reservationRepository.save(reservation);
+                    return ResponseEntity.ok("Rezerwacja została utworzona.");
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     public boolean isBookCopyReserved(Integer bookCopyId) {
         Optional<Reservation> activeReservation = reservationRepository.findActiveReservationByBookCopyId(bookCopyId);
@@ -38,6 +50,20 @@ public class CheckoutService {
         return activeLoan.isPresent();
     }
 
+    public boolean cancelReservation(Integer bookCopyId, User user) {
+        Optional<Reservation> reservationOpt = reservationRepository
+                .findActiveReservationByBookCopyAndUser(bookCopyId, user.getId_user());
+
+        if (reservationOpt.isPresent()) {
+            Reservation reservation = reservationOpt.get();
+            reservation.setEndDate(LocalDateTime.now());
+            reservationRepository.save(reservation);
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean isReservedByUser(Integer bookCopyId, String username) {
         Optional<Reservation> activeReservation = reservationRepository.findActiveReservationByBookCopyId(bookCopyId);
 
@@ -47,9 +73,6 @@ public class CheckoutService {
         }
         return false;
     }
-    public ResponseEntity<Object> cancelReservation(int reservation_id){
-        //todo
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     public ResponseEntity<Object> loanBook(int reservation_id){
         //todo

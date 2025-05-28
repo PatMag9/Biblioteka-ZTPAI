@@ -22,6 +22,14 @@ import java.util.Map;
 public class CheckoutController {
     private final CheckoutService checkoutService;
 
+    @PostMapping("/reserve/{bookCopyId}")
+    public ResponseEntity<?> reserveBookCopy(@PathVariable Integer bookCopyId, @AuthenticationPrincipal User user) {
+        if (checkoutService.isBookCopyReserved(bookCopyId)||checkoutService.isBookCopyLoaned(bookCopyId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Book copy is already reserved or borrowed.");
+        }
+        return checkoutService.reserveBookCopy(bookCopyId, user);
+    }
+
     @GetMapping("/bookCopyStatus/{bookCopyId}")
     public ResponseEntity<Map<String, Boolean>> getBookCopyStatus(
             @PathVariable Integer bookCopyId,
@@ -43,9 +51,16 @@ public class CheckoutController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/reservation/{bookId}")
-    public ResponseEntity<Object> addReservation(@PathVariable int bookId){
-        return checkoutService.addReservation(bookId);
+    @PutMapping("/cancelReservation/{bookCopyId}")
+    public ResponseEntity<?> cancelReservation(@PathVariable Integer bookCopyId, @AuthenticationPrincipal User user) {
+        boolean success = checkoutService.cancelReservation(bookCopyId, user);
+        if (success) {
+            return ResponseEntity.ok("Rezerwacja została anulowana.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono aktywnej rezerwacji lub brak uprawnień.");
+        }
+    }
+
     }
 
     @PutMapping("/reservation/{reservation_id}")
