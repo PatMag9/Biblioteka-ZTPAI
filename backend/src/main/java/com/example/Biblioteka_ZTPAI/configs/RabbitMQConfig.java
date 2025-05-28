@@ -15,6 +15,9 @@ public class RabbitMQConfig {
     public static final String EXCHANGE  = "exampleExchange";
     public static final String ROUTING_KEY  = "exampleRoutingKey";
     public static final String SECOND_ROUTING_KEY  = "secondRoutingKey";
+    public static final String REGISTER_QUEUE = "registerQueue";
+    private static final String REGISTER_EXCHANGE  = "registerExchange";
+    private static final String REGISTER_ROUTING_KEY  = "registerRoutingKey";
 
     @Bean
     public Queue queue() {
@@ -27,8 +30,19 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue registerQueue(){
+        return new Queue(REGISTER_QUEUE, false);
+    }
+
+    @Bean
     public TopicExchange exchange(){
         return  new TopicExchange(EXCHANGE);
+    }
+
+
+    @Bean
+    public TopicExchange registerExchange(){
+        return  new TopicExchange(REGISTER_EXCHANGE);
     }
 
     @Bean
@@ -45,6 +59,14 @@ public class RabbitMQConfig {
                 .bind(secondQueue())
                 .to(exchange())
                 .with(SECOND_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding reisterBinding(){
+        return BindingBuilder
+                .bind(registerQueue())
+                .to(registerExchange())
+                .with(REGISTER_ROUTING_KEY);
     }
 
     @Bean
