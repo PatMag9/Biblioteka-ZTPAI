@@ -73,10 +73,18 @@ public class CheckoutService {
         }
         return false;
     }
+
+    public ResponseEntity<Object> getActiveReservations() {
+        return ResponseEntity.ok(reservationRepository.findActiveReservationsWithUserAndBook());
+    }
+
     }
     public ResponseEntity<Object> loanBook(int reservation_id){
         //todo
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    public List<LoanUserBookDTO> getActiveLoans() {
+        return loanRepository.findActiveLoansWithUserAndBook();
     }
     public ResponseEntity<Object> returnBook(int loan_id){
         //todo

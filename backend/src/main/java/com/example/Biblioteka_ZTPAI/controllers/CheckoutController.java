@@ -61,16 +61,20 @@ public class CheckoutController {
         }
     }
 
+    @GetMapping("/reservations")
+    public ResponseEntity<Object> getActiveReservations() {
+        return checkoutService.getActiveReservations();
     }
 
-    @PutMapping("/reservation/{reservation_id}")
-    public ResponseEntity<Object> cancelReservation(@PathVariable int reservation_id){
-        return checkoutService.cancelReservation(reservation_id);
     }
 
     @PostMapping("/loan/{reservation_id}")
     public ResponseEntity<Object> loanBook(@PathVariable int reservation_id){
         return checkoutService.loanBook(reservation_id);
+    @GetMapping("/loans")
+    public ResponseEntity<List<LoanUserBookDTO>> getActiveLoans() {
+        List<LoanUserBookDTO> activeLoans = checkoutService.getActiveLoans();
+        return ResponseEntity.ok(activeLoans);
     }
 
     @PutMapping("/loan/{loan_id}")
