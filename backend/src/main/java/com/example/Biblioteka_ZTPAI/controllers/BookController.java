@@ -1,9 +1,7 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
-import com.example.Biblioteka_ZTPAI.models.Book;
 import com.example.Biblioteka_ZTPAI.services.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,16 +35,6 @@ public class BookController {
     @GetMapping("/{bookId}/authors")
     public ResponseEntity<Object> getAuthorsByBookId(@PathVariable int bookId) {
         return bookService.getAuthorsByBookId(bookId);
-    }
-
-    @PostMapping
-    public ResponseEntity<Object> addBook(@RequestBody Book book) {
-        return bookService.addBook(book);
-    }
-
-    @PutMapping("/{bookId}")
-    public ResponseEntity<Object> updateBook(@PathVariable int bookId, @RequestBody Book updatedBook) {
-        return bookService.updateBook(bookId, updatedBook);
     }
 
     @DeleteMapping("/{bookId}")

@@ -64,28 +64,6 @@ public class BookService {
         return ResponseEntity.ok(authors);
     }
 
-    public ResponseEntity<Object> addBook(Book book) {
-        bookRepository.save(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
-    }
-
-    public ResponseEntity<Object> updateBook(int bookId, Book updatedBook) {
-        Optional<Book> existingBookOpt = bookRepository.findById(bookId);
-
-        if (existingBookOpt.isPresent()) {
-            Book existingBook = existingBookOpt.get();
-            existingBook.setTitle(updatedBook.getTitle());
-            existingBook.setGenre(updatedBook.getGenre());
-            existingBook.setCover(updatedBook.getCover());
-            existingBook.setDescription(updatedBook.getDescription());
-
-            bookRepository.save(existingBook);
-            return ResponseEntity.ok(existingBook);
-        } else {
-            throw new NoSuchElementException("Book not found");
-        }
-    }
-
     public ResponseEntity<Object> deleteBook(int bookId) {
         Optional<Book> bookOpt = bookRepository.findById(bookId);
 
