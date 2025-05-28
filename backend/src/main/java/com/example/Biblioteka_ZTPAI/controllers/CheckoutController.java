@@ -66,19 +66,27 @@ public class CheckoutController {
         return checkoutService.getActiveReservations();
     }
 
+    @PutMapping("/reservations/{reservationId}/confirm")
+    public ResponseEntity<?> completeReservation(@PathVariable Integer reservationId) {
+        try {
+            checkoutService.completeReservation(reservationId);
+            return ResponseEntity.ok("Rezerwacja została zakończona i przekształcona w wypożyczenie.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił błąd podczas przetwarzania.");
+        }
     }
 
-    @PostMapping("/loan/{reservation_id}")
-    public ResponseEntity<Object> loanBook(@PathVariable int reservation_id){
-        return checkoutService.loanBook(reservation_id);
     @GetMapping("/loans")
     public ResponseEntity<List<LoanUserBookDTO>> getActiveLoans() {
         List<LoanUserBookDTO> activeLoans = checkoutService.getActiveLoans();
         return ResponseEntity.ok(activeLoans);
     }
 
-    @PutMapping("/loan/{loan_id}")
-    public ResponseEntity<Object> returnBook(@PathVariable int loan_id){
-        return checkoutService.returnBook(loan_id);
+    @PutMapping("/loans/{loanId}/return")
+    public ResponseEntity<Object> returnLoan(@PathVariable Integer loanId) {
+        return checkoutService.returnLoan(loanId);
     }
+
 }

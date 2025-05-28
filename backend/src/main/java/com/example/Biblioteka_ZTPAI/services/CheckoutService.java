@@ -78,16 +78,46 @@ public class CheckoutService {
         return ResponseEntity.ok(reservationRepository.findActiveReservationsWithUserAndBook());
     }
 
+    public void completeReservation(Integer reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("Rezerwacja nie została znaleziona"));
+
+        reservation.setEndDate(LocalDateTime.now());
+        reservationRepository.save(reservation);
+
+        Loan loan = Loan.builder()
+                .user(reservation.getUser())
+                .bookCopy(reservation.getBookCopy())
+                .start_date(reservation.getStart_date())
+                .due_date(LocalDateTime.now().plusWeeks(2))
+                .endDate(null)
+                .build();
+
+        loanRepository.save(loan);
     }
-    public ResponseEntity<Object> loanBook(int reservation_id){
-        //todo
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     public List<LoanUserBookDTO> getActiveLoans() {
         return loanRepository.findActiveLoansWithUserAndBook();
     }
-    public ResponseEntity<Object> returnBook(int loan_id){
-        //todo
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    public ResponseEntity<Object> returnLoan(Integer loanId) {
+        Optional<Loan> loanOpt = loanRepository.findById(loanId);
+
+        if (loanOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Wypożyczenie o ID " + loanId + " nie istnieje.");
+        }
+
+        Loan loan = loanOpt.get();
+
+        if (loan.getEndDate() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("To wypożyczenie zostało już zakończone.");
+        }
+
+        loan.setEndDate(LocalDateTime.now());
+        loanRepository.save(loan);
+
+        return ResponseEntity.ok("Wypożyczenie zakończone pomyślnie.");
     }
 }
