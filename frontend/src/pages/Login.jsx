@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import '../styles/HomePages.css';
 
@@ -18,8 +19,17 @@ const Login = () => {
             });
             const token = response.data.token;
             localStorage.setItem('jwtToken', token);
-            navigate('/books');
+
+            const decoded = jwtDecode(token);
+            const roles = decoded.roles || [];
+
+            if (roles.includes("ROLE_ADMIN")) {
+                navigate('/admin');
+            } else {
+                navigate('/books');
+            }
         } catch (err) {
+            console.error('Login error:', err);
             setError('Invalid email or password');
         }
     };
