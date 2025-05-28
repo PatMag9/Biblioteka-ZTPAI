@@ -174,9 +174,9 @@ function BookAdminList() {
                     ) : (
                         books.map(book => (
                             <div className="admin-book-card" key={book.idBook}>
-                                <div className="admin-book-card-element">
+                                <div className="admin-book-card-element book-cover">
                                     <Link to={`/book/${book.idBook}`}>
-                                        {book.cover && <img src={book.cover} alt="cover_art"/>}
+                                        {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art"/>}
                                     </Link>
                                 </div>
                                 <div className="admin-book-card-element">
@@ -195,7 +195,9 @@ function BookAdminList() {
                                     {book.genre.genre_name}
                                 </div>
                                 <div className="admin-book-card-element">
-                                    <button className="reserve-button">Zobacz</button>
+                                    <Link to={`/book/${book.idBook}`}>
+                                        <button className="reserve-button">Zobacz</button>
+                                    </Link>
                                 </div>
                             </div>
                         ))

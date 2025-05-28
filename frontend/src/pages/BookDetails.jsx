@@ -200,6 +200,7 @@ function BookDetails() {
 
     return (
         <div className="container">
+            {console.log(book)}
             <BookPageHeader/>
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
@@ -207,10 +208,10 @@ function BookDetails() {
                 <section className="book-list">
                     <div className="book-page">
                         <div className="book-info">
-                            <div className="book-cover">{book.cover && <img src={book.cover} alt="cover_art"/>}</div>
+                            <div className="book-cover">{book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art"/>}</div>
                             <div className="book-details">
                                 <p><strong>Tytuł: </strong>
-                                    <Link to={`/book/${book.id_book}`}>{book.title}</Link>
+                                    {book.title}
                                 </p>
                                 <p><strong>Autor/rzy:</strong>
                                     {authors.length > 0
@@ -222,6 +223,7 @@ function BookDetails() {
                                         : "brak danych"}
                                 </p>
                                 <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
+                                <p><strong>Opis:</strong> {book.description}</p>
                             </div>
                         </div>
                         <section className="book-copies">

@@ -224,3 +224,109 @@ button[page-active="true"] {
 .copies-table th {
     background-color: #f2f2f2;
 }
+
+@media (max-width: 768px) {
+    .book-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .header-logo {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-logo img {
+        width: 80px;
+        margin-bottom: 5px;
+    }
+
+    .header-logo .banner {
+        font-size: 1.5em;
+        text-align: left;
+    }
+
+    .header-right-side {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .header-right-side input {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    main h2 {
+        font-size: 2em;
+        margin-top: 10px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .nav-element {
+        font-size: 1em;
+        margin: 5px 0;
+    }
+
+    .page-nav {
+        flex-direction: column;
+    }
+
+    .page-nav button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .book-list {
+        gap: 10px;
+    }
+
+    .book-page {
+        padding: 10px;
+        height: auto;
+        min-height: unset;
+    }
+
+    .book-info {
+        flex-direction: column;
+        font-size: 1.2em;
+        align-items: flex-start;
+    }
+
+    .book-cover {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .book-cover img {
+        width: 100%;
+        height: auto;
+    }
+
+    .copies-table th,
+    .copies-table td {
+        font-size: 0.9em;
+        padding: 0.3rem;
+    }
+
+    .reserve-button {
+        width: 100%;
+        padding: 8px;
+        font-size: 1em;
+    }
+
+    .copies-table {
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+    }
+}

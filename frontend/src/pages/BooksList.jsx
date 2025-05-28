@@ -117,7 +117,7 @@ function BooksList() {
                             <div className="book-card" key={book.idBook}>
                                 <div className="book-cover">
                                     <Link to={`/book/${book.idBook}`}>
-                                        {book.cover && <img src={book.cover} alt="cover_art" />}
+                                        {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art" />}
                                     </Link>
                                 </div>
                                 <div className="book-details">
@@ -135,7 +135,9 @@ function BooksList() {
                                     </p>
                                     <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
                                 </div>
-                                <button className="reserve-button">Zobacz</button>
+                                <Link to={`/book/${book.idBook}`}>
+                                    <button className="reserve-button">Zobacz</button>
+                                </Link>
                             </div>
                         ))
                     )}
