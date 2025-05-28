@@ -25,7 +25,7 @@ public class CheckoutService {
     private final ReservationRepository reservationRepository;
     private final LoanRepository loanRepository;
 
-    public ResponseEntity<?> reserveBookCopy(Integer bookCopyId, User user) {
+    public ResponseEntity<String> reserveBookCopy(Integer bookCopyId, User user) {
         return bookCopyRepository.findById(bookCopyId)
                 .map(bookCopy -> {
                     Reservation reservation = Reservation.builder()
@@ -37,7 +37,7 @@ public class CheckoutService {
                     reservationRepository.save(reservation);
                     return ResponseEntity.ok("Rezerwacja została utworzona.");
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book copy not found."));
     }
 
     public boolean isBookCopyReserved(Integer bookCopyId) {

@@ -1,8 +1,6 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
 import com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO;
-import com.example.Biblioteka_ZTPAI.models.Loan;
-import com.example.Biblioteka_ZTPAI.models.Reservation;
 import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.services.CheckoutService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +21,8 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping("/reserve/{bookCopyId}")
-    public ResponseEntity<?> reserveBookCopy(@PathVariable Integer bookCopyId, @AuthenticationPrincipal User user) {
-        if (checkoutService.isBookCopyReserved(bookCopyId)||checkoutService.isBookCopyLoaned(bookCopyId)) {
+    public ResponseEntity<String> reserveBookCopy(@PathVariable Integer bookCopyId, @AuthenticationPrincipal User user) {
+        if (checkoutService.isBookCopyReserved(bookCopyId) || checkoutService.isBookCopyLoaned(bookCopyId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Book copy is already reserved or borrowed.");
         }
         return checkoutService.reserveBookCopy(bookCopyId, user);
