@@ -208,3 +208,19 @@ button[page-active="true"] {
 .reserve-button:hover {
     background: #1c8ed1;
 }
+.copies-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.copies-table th,
+.copies-table td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.copies-table th {
+    background-color: #f2f2f2;
+}
