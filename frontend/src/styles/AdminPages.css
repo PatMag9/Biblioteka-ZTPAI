@@ -1,0 +1,35 @@
+.admin-container{
+    background: linear-gradient(#28C9FF 15%, #BBE0ED 40%) no-repeat fixed;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.admin-book-list{
+    width: 90%;
+}
+
+.admin-book-list-header{
+    display: flex;
+    justify-content: space-evenly;
+    align-content: center;
+    color: white;
+    background-color: black;
+}
+
+.admin-book-list-body{
+    background-color: white;
+}
+.admin-book-card{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 200px;
+
+}
+.admin-book-card-element{
+    display: flex;
+    align-items: center;
+}
