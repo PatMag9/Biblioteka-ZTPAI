@@ -3,11 +3,11 @@ import logo from "../assets/logo_outline.svg";
 import searchIcon from "../assets/search.svg";
 import userIcon from "../assets/user.svg";
 import React from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 
 
-function BookPageHeader() {
+function BookPageHeader({headerLink}) {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -24,10 +24,15 @@ function BookPageHeader() {
         navigate('/');
     };
     return (
-        <div className="container">
             <header className="book-header">
                 <div className="header-logo">
-                    <img src={logo}/>
+                    {headerLink ? (
+                        <Link to={headerLink}>
+                            <img src={logo} alt="logo" />
+                        </Link>
+                    ) : (
+                        <img src={logo} alt="logo" />
+                    )}
                     <div className="banner">BiblioSolis</div>
                 </div>
                 <div className="header-right-side">
@@ -40,7 +45,6 @@ function BookPageHeader() {
                     </div>
                 </div>
             </header>
-        </div>
     );
 }
 

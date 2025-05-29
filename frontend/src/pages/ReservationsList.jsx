@@ -110,52 +110,54 @@ function ReservationsList() {
     }
 
     return (
-        <div className="admin-container">
-            <BookPageHeader/>
-            <h1>Rezerwacje</h1>
-            <div className="admin-book-list">
-                <div className="admin-book-list-header">
-                    <div className="admin-header-element">Id wypożyczenia</div>
-                    <div className="admin-header-element">Użytkownik</div>
-                    <div className="admin-header-element">Książka</div>
-                    <div className="admin-header-element">Data rozpoczęcia</div>
-                    <div className="admin-header-element">Akcja</div>
-                </div>
-                <div className="admin-book-list-body">
-                    {reservations.length === 0 && (
-                        <div className="admin-book-list-row">Brak aktywnych rezerwacji.</div>
-                    )}
-                    {reservations.map((reservation) => (
-                        <div
-                            className="admin-book-card"
-                            key={reservation.idReservation}
-                        >
-                            <div className="admin-book-card-element"  style={{ flex: 3 }}>
-                                {reservation.idReservation}
+        <>
+            <BookPageHeader headerLink="/admin" />
+            <div className="admin-container">
+                <h1>Rezerwacje</h1>
+                <div className="admin-book-list">
+                    <div className="admin-book-list-header">
+                        <div className="admin-header-element">Id wypożyczenia</div>
+                        <div className="admin-header-element">Użytkownik</div>
+                        <div className="admin-header-element">Książka</div>
+                        <div className="admin-header-element">Data rozpoczęcia</div>
+                        <div className="admin-header-element">Akcja</div>
+                    </div>
+                    <div className="admin-book-list-body">
+                        {reservations.length === 0 && (
+                            <div className="admin-book-list-row">Brak aktywnych rezerwacji.</div>
+                        )}
+                        {reservations.map((reservation) => (
+                            <div
+                                className="admin-book-card"
+                                key={reservation.idReservation}
+                            >
+                                <div className="admin-book-card-element"  style={{ flex: 3 }}>
+                                    {reservation.idReservation}
+                                </div>
+                                <div className="admin-book-card-element"  style={{ flex: 3 }}>
+                                    {reservation.username || "Brak danych"}
+                                </div>
+                                <div className="admin-book-card-element"  style={{ flex: 2 }}>
+                                    {reservation.bookTitle || "Brak danych"}
+                                </div>
+                                <div className="admin-book-card-element"  style={{ flex: 2 }}>
+                                    {new Date(reservation.startDate).toLocaleString()}
+                                </div>
+                                <div className="admin-book-card-element" style={{ flex: 1 }}>
+                                    <button
+                                        onClick={() =>
+                                            handleCompleteReservation(reservation.idReservation)
+                                        }
+                                    >
+                                        Przekształć w wypożyczenie
+                                    </button>
+                                </div>
                             </div>
-                            <div className="admin-book-card-element"  style={{ flex: 3 }}>
-                                {reservation.username || "Brak danych"}
-                            </div>
-                            <div className="admin-book-card-element"  style={{ flex: 2 }}>
-                                {reservation.bookTitle || "Brak danych"}
-                            </div>
-                            <div className="admin-book-card-element"  style={{ flex: 2 }}>
-                                {new Date(reservation.startDate).toLocaleString()}
-                            </div>
-                            <div className="admin-book-card-element" style={{ flex: 1 }}>
-                                <button
-                                    onClick={() =>
-                                        handleCompleteReservation(reservation.idReservation)
-                                    }
-                                >
-                                    Przekształć w wypożyczenie
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

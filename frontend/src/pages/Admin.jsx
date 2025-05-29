@@ -45,18 +45,20 @@ const AdminPage = () => {
     }, [navigate]);
 
     return (
-        <div style={{ padding: 20 }}>
+        <div>
             <BookPageHeader/>
-            <h1>Panel Admina</h1>
-            <button onClick={() => navigate('/admin/books')} style={{ margin: 10, padding: '10px 20px' }}>
-                Książki
-            </button>
-            <button onClick={() => navigate('/admin/reservations')} style={{ margin: 10, padding: '10px 20px' }}>
-                Rezerwacje
-            </button>
-            <button onClick={() => navigate('/admin/loans')} style={{ margin: 10, padding: '10px 20px' }}>
-                Wypożyczenia
-            </button>
+            <div style={{ padding: 20 }}>
+                <h1>Panel Admina</h1>
+                <button onClick={() => navigate('/admin/books')} style={{ margin: 10, padding: '10px 20px' }}>
+                    Książki
+                </button>
+                <button onClick={() => navigate('/admin/reservations')} style={{ margin: 10, padding: '10px 20px' }}>
+                    Rezerwacje
+                </button>
+                <button onClick={() => navigate('/admin/loans')} style={{ margin: 10, padding: '10px 20px' }}>
+                    Wypożyczenia
+                </button>
+            </div>
         </div>
     );
 };

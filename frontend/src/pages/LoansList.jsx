@@ -104,50 +104,52 @@ function LoansList() {
     }
 
     return (
-        <div className="admin-container">
-            <BookPageHeader/>
-            <h1>Wypożyczenia</h1>
-            <div className="admin-book-list">
-                <div className="admin-book-list-header">
-                    <div className="admin-header-element">Id wypożyczenia</div>
-                    <div className="admin-header-element">Użytkownik</div>
-                    <div className="admin-header-element">Książka</div>
-                    <div className="admin-header-element">Data wypożyczenia</div>
-                    <div className="admin-header-element">Data do zwrotu</div>
-                    <div className="admin-header-element">Akcja</div>
-                </div>
-                <div className="admin-book-list-body">
-                    {loans.length === 0 ? (
-                        <div className="admin-book-list-row">Brak aktywnych wypożyczeń.</div>
-                    ) : (
-                        loans.map((loan) => (
-                            <div className="admin-book-card" key={loan.idLoan}>
-                                <div className="admin-book-card-element">{loan.idLoan}</div>
-                                <div className="admin-book-card-element">
-                                    {loan.username || "Brak danych"}
+        <>
+            <BookPageHeader headerLink="/admin" />
+            <div className="admin-container">
+                <h1>Wypożyczenia</h1>
+                <div className="admin-book-list">
+                    <div className="admin-book-list-header">
+                        <div className="admin-header-element">Id wypożyczenia</div>
+                        <div className="admin-header-element">Użytkownik</div>
+                        <div className="admin-header-element">Książka</div>
+                        <div className="admin-header-element">Data wypożyczenia</div>
+                        <div className="admin-header-element">Data do zwrotu</div>
+                        <div className="admin-header-element">Akcja</div>
+                    </div>
+                    <div className="admin-book-list-body">
+                        {loans.length === 0 ? (
+                            <div className="admin-book-list-row">Brak aktywnych wypożyczeń.</div>
+                        ) : (
+                            loans.map((loan) => (
+                                <div className="admin-book-card" key={loan.idLoan}>
+                                    <div className="admin-book-card-element">{loan.idLoan}</div>
+                                    <div className="admin-book-card-element">
+                                        {loan.username || "Brak danych"}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {loan.bookTitle || "Brak danych"}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {new Date(loan.startDate).toLocaleString()}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {loan.dueDate
+                                            ? new Date(loan.dueDate).toLocaleDateString()
+                                            : "-"}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        <button onClick={() => handleReturnLoan(loan.idLoan)}>
+                                            Zwróć książkę
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="admin-book-card-element">
-                                    {loan.bookTitle || "Brak danych"}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    {new Date(loan.startDate).toLocaleString()}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    {loan.dueDate
-                                        ? new Date(loan.dueDate).toLocaleDateString()
-                                        : "-"}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    <button onClick={() => handleReturnLoan(loan.idLoan)}>
-                                        Zwróć książkę
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

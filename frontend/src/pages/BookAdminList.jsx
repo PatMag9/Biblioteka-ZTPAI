@@ -161,54 +161,56 @@ function BookAdminList() {
     };
 
     return (
-        <div className="admin-container">
-            <BookPageHeader/>
-            <h1>Książki</h1>
-            <div className="admin-book-list">
-                <div className="admin-book-list-header">
-                    <div className="admin-header-element">Okładka</div>
-                    <div className="admin-header-element">Tytuł</div>
-                    <div className="admin-header-element">Autor</div>
-                    <div className="admin-header-element">Gatunek</div>
-                    <div className="admin-header-element">Akcja</div>
-                </div>
-                <div className="admin-book-list-body">
-                    {isLoading ? (
-                        <p>Ładowanie książek...</p>
-                    ) : (
-                        books.map(book => (
-                            <div className="admin-book-card" key={book.idBook}>
-                                <div className="admin-book-card-element book-cover-admin">
-                                    <Link to={`/book/${book.idBook}`}>
-                                        {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art"/>}
-                                    </Link>
+        <>
+            <BookPageHeader headerLink="/admin" />
+            <div className="admin-container">
+                <h1>Książki</h1>
+                <div className="admin-book-list">
+                    <div className="admin-book-list-header">
+                        <div className="admin-header-element">Okładka</div>
+                        <div className="admin-header-element">Tytuł</div>
+                        <div className="admin-header-element">Autor</div>
+                        <div className="admin-header-element">Gatunek</div>
+                        <div className="admin-header-element">Akcja</div>
+                    </div>
+                    <div className="admin-book-list-body">
+                        {isLoading ? (
+                            <p>Ładowanie książek...</p>
+                        ) : (
+                            books.map(book => (
+                                <div className="admin-book-card" key={book.idBook}>
+                                    <div className="admin-book-card-element book-cover-admin">
+                                        <Link to={`/book/${book.idBook}`}>
+                                            {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art"/>}
+                                        </Link>
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {book.title}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {authorsMap[book.idBook] && authorsMap[book.idBook].length > 0
+                                            ? authorsMap[book.idBook].map((author, index) => (
+                                                <span key={author.id_author}>
+                                                        {author.name} {author.surname}{index < authorsMap[book.idBook].length - 1 ? ', ' : ''}
+                                                    </span>
+                                            ))
+                                            : "brak danych"}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        {book.genre.genre_name}
+                                    </div>
+                                    <div className="admin-book-card-element">
+                                        <Link to={`/book/${book.idBook}`}>
+                                            <button className="reserve-button">Zobacz</button>
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="admin-book-card-element">
-                                    {book.title}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    {authorsMap[book.idBook] && authorsMap[book.idBook].length > 0
-                                        ? authorsMap[book.idBook].map((author, index) => (
-                                            <span key={author.id_author}>
-                                                    {author.name} {author.surname}{index < authorsMap[book.idBook].length - 1 ? ', ' : ''}
-                                                </span>
-                                        ))
-                                        : "brak danych"}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    {book.genre.genre_name}
-                                </div>
-                                <div className="admin-book-card-element">
-                                    <Link to={`/book/${book.idBook}`}>
-                                        <button className="reserve-button">Zobacz</button>
-                                    </Link>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
