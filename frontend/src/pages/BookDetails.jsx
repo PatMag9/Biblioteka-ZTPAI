@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {useParams, Link, useNavigate} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import "../styles/BookPages.css";
 import BookPageHeader from "../components/BookPageHeader.jsx";
 import BookPageCategories from "../components/BookPageCategories.jsx";

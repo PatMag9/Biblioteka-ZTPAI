@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import "../styles/AdminPages.css"
 import { jwtDecode } from "jwt-decode";
 import BookPageHeader from "../components/BookPageHeader.jsx";

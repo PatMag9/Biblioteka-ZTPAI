@@ -10,24 +10,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    public static final String QUEUE = "exampleQueue";
-    public static final String SECOND_QUEUE = "secondQueue";
-    public static final String EXCHANGE  = "exampleExchange";
-    public static final String ROUTING_KEY  = "exampleRoutingKey";
-    public static final String SECOND_ROUTING_KEY  = "secondRoutingKey";
     public static final String REGISTER_QUEUE = "registerQueue";
     private static final String REGISTER_EXCHANGE  = "registerExchange";
     private static final String REGISTER_ROUTING_KEY  = "registerRoutingKey";
-
-    @Bean
-    public Queue queue() {
-        return new Queue(QUEUE, false);
-    }
-
-    @Bean
-    public Queue secondQueue(){
-        return new Queue(SECOND_QUEUE, false);
-    }
 
     @Bean
     public Queue registerQueue(){
@@ -35,30 +20,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public TopicExchange exchange(){
-        return  new TopicExchange(EXCHANGE);
-    }
-
-
-    @Bean
     public TopicExchange registerExchange(){
         return  new TopicExchange(REGISTER_EXCHANGE);
-    }
-
-    @Bean
-    public Binding binding(){
-        return BindingBuilder
-                .bind(queue())
-                .to(exchange())
-                .with(ROUTING_KEY);
-    }
-
-    @Bean
-    public Binding secondBinding(){
-        return BindingBuilder
-                .bind(secondQueue())
-                .to(exchange())
-                .with(SECOND_ROUTING_KEY);
     }
 
     @Bean
@@ -80,13 +43,5 @@ public class RabbitMQConfig {
         rabbitTemplate.setMessageConverter(converter());
         return rabbitTemplate;
     }
-
-//    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
-//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-//        container.setConnectionFactory(connectionFactory);
-//        container.setQueueNames(QUEUE);
-//        container.setMessageListener(listenerAdapter);
-//        return container;
-//    }
 
 }

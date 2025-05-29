@@ -9,7 +9,6 @@ import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.NoSuchElementException;

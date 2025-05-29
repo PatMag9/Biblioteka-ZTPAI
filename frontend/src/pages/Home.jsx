@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "../styles/HomePages.css";
 import {Link} from "react-router-dom";
 function Home() {

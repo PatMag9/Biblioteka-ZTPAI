@@ -3,7 +3,6 @@ package com.example.Biblioteka_ZTPAI.services;
 import com.example.Biblioteka_ZTPAI.models.*;
 import com.example.Biblioteka_ZTPAI.repositories.RoleRepository;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
-import com.example.Biblioteka_ZTPAI.temporary.Producer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
