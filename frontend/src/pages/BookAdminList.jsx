@@ -78,7 +78,7 @@ function BookAdminList() {
     }, [navigate]);
 
     const fetchBooks = () => {
-        fetch("http://localhost:8080/api/books", {
+        fetch("http://localhost:8080/api/v1/books", {
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
             },
@@ -97,7 +97,7 @@ function BookAdminList() {
 
         const authorsData = await Promise.all(
             books.map((book) =>
-                fetch(`http://localhost:8080/api/books/${book.idBook}/authors`, {
+                fetch(`http://localhost:8080/api/v1/books/${book.idBook}/authors`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                     },
@@ -115,7 +115,7 @@ function BookAdminList() {
     };
 
     const fetchGenres = () => {
-        fetch("http://localhost:8080/api/genres", {
+        fetch("http://localhost:8080/api/v1/genres", {
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
             },
@@ -141,7 +141,7 @@ function BookAdminList() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch("http://localhost:8080/api/books", {
+        fetch("http://localhost:8080/api/v1/books", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -4,13 +4,12 @@ import com.example.Biblioteka_ZTPAI.models.AuthenticationResponse;
 import com.example.Biblioteka_ZTPAI.models.LoginRequest;
 import com.example.Biblioteka_ZTPAI.models.RegisterRequest;
 import com.example.Biblioteka_ZTPAI.services.AuthService;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;

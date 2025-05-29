@@ -47,7 +47,7 @@ function LoansList() {
 
     const fetchLoans = () => {
         setIsLoading(true);
-        fetch("http://localhost:8080/api/checkout/loans", {
+        fetch("http://localhost:8080/api/v1/checkout/loans", {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
             },
@@ -73,7 +73,7 @@ function LoansList() {
     const handleReturnLoan = (loanId) => {
         if (!window.confirm("Czy na pewno chcesz oznaczyć wypożyczenie jako zwrócone?")) return;
 
-        fetch(`http://localhost:8080/api/checkout/loans/${loanId}/return`, {
+        fetch(`http://localhost:8080/api/v1/checkout/loans/${loanId}/return`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,

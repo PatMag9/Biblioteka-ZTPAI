@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -77,7 +76,7 @@ public class CheckoutControllerTest {
         when(checkoutService.reserveBookCopy(eq(1), any(User.class)))
                 .thenReturn(ResponseEntity.ok("Rezerwacja została utworzona."));
 
-        mockMvc.perform(post("/api/checkout/reserve/1")
+        mockMvc.perform(post("/api/v1/checkout/reserve/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Rezerwacja została utworzona."));
@@ -87,7 +86,7 @@ public class CheckoutControllerTest {
     void reserveBookCopy_shouldReturnConflict() throws Exception {
         when(checkoutService.isBookCopyReserved(1)).thenReturn(true);
 
-        mockMvc.perform(post("/api/checkout/reserve/1")
+        mockMvc.perform(post("/api/v1/checkout/reserve/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isConflict())
                 .andExpect(content().string("Book copy is already reserved or borrowed."));
@@ -99,7 +98,7 @@ public class CheckoutControllerTest {
         when(checkoutService.isReservedByUser(1, testUser.getUsername())).thenReturn(true);
         when(checkoutService.isBookCopyLoaned(1)).thenReturn(false);
 
-        mockMvc.perform(get("/api/checkout/bookCopyStatus/1")
+        mockMvc.perform(get("/api/v1/checkout/bookCopyStatus/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reserved").value(true))
@@ -111,7 +110,7 @@ public class CheckoutControllerTest {
     void cancelReservation_shouldReturnOk() throws Exception {
         when(checkoutService.cancelReservation(1, testUser)).thenReturn(true);
 
-        mockMvc.perform(put("/api/checkout/cancelReservation/1")
+        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Rezerwacja została anulowana."));
@@ -121,7 +120,7 @@ public class CheckoutControllerTest {
     void cancelReservation_shouldReturnNotFound() throws Exception {
         when(checkoutService.cancelReservation(1, testUser)).thenReturn(false);
 
-        mockMvc.perform(put("/api/checkout/cancelReservation/1")
+        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Nie znaleziono aktywnej rezerwacji lub brak uprawnień."));
@@ -131,7 +130,7 @@ public class CheckoutControllerTest {
     void completeReservation_shouldReturnOk() throws Exception {
         Mockito.doNothing().when(checkoutService).completeReservation(1);
 
-        mockMvc.perform(put("/api/checkout/reservations/1/confirm")
+        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Rezerwacja została zakończona i przekształcona w wypożyczenie."));
@@ -142,7 +141,7 @@ public class CheckoutControllerTest {
         doThrow(new IllegalArgumentException("Rezerwacja nie została znaleziona"))
                 .when(checkoutService).completeReservation(1);
 
-        mockMvc.perform(put("/api/checkout/reservations/1/confirm")
+        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Rezerwacja nie została znaleziona"));
@@ -152,7 +151,7 @@ public class CheckoutControllerTest {
     void returnLoan_shouldReturnOk() throws Exception {
         when(checkoutService.returnLoan(1)).thenReturn(ResponseEntity.ok("Zwrócono"));
 
-        mockMvc.perform(put("/api/checkout/loans/1/return")
+        mockMvc.perform(put("/api/v1/checkout/loans/1/return")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Zwrócono"));
@@ -163,7 +162,7 @@ public class CheckoutControllerTest {
         when(checkoutService.getActiveReservations())
                 .thenReturn(ResponseEntity.ok(List.of()));
 
-        mockMvc.perform(get("/api/checkout/reservations")
+        mockMvc.perform(get("/api/v1/checkout/reservations")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk());
     }
@@ -172,7 +171,7 @@ public class CheckoutControllerTest {
     void getActiveLoans_shouldReturnOk() throws Exception {
         when(checkoutService.getActiveLoans()).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/checkout/loans")
+        mockMvc.perform(get("/api/v1/checkout/loans")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk());
     }
@@ -182,7 +181,7 @@ public class CheckoutControllerTest {
         when(checkoutService.isBookCopyReserved(1)).thenReturn(true);
         when(checkoutService.isBookCopyLoaned(1)).thenReturn(false);
 
-        mockMvc.perform(post("/api/checkout/reserve/1")
+        mockMvc.perform(post("/api/v1/checkout/reserve/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isConflict())
                 .andExpect(content().string("Book copy is already reserved or borrowed."));
@@ -192,7 +191,7 @@ public class CheckoutControllerTest {
     void cancelReservation_shouldReturnNotFound_whenNoActiveReservation() throws Exception {
         when(checkoutService.cancelReservation(eq(1), any(User.class))).thenReturn(false);
 
-        mockMvc.perform(put("/api/checkout/cancelReservation/1")
+        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Nie znaleziono aktywnej rezerwacji lub brak uprawnień."));
@@ -203,7 +202,7 @@ public class CheckoutControllerTest {
         doThrow(new IllegalArgumentException("Rezerwacja nie została znaleziona"))
                 .when(checkoutService).completeReservation(1);
 
-        mockMvc.perform(put("/api/checkout/reservations/1/confirm")
+        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Rezerwacja nie została znaleziona"));

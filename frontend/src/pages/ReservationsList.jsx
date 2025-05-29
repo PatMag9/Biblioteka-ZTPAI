@@ -49,7 +49,7 @@ function ReservationsList() {
 
     const fetchReservations = () => {
         setIsLoading(true);
-        fetch("http://localhost:8080/api/checkout/reservations", {
+        fetch("http://localhost:8080/api/v1/checkout/reservations", {
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
             },
@@ -75,7 +75,7 @@ function ReservationsList() {
     }, []);
 
     const handleCompleteReservation = (reservationId) => {
-        fetch(`http://localhost:8080/api/checkout/reservations/${reservationId}/confirm`, {
+        fetch(`http://localhost:8080/api/v1/checkout/reservations/${reservationId}/confirm`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,

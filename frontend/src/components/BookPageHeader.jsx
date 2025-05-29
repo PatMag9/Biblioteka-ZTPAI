@@ -12,7 +12,7 @@ function BookPageHeader() {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/auth/logout', {}, {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
                 }

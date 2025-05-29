@@ -5,8 +5,8 @@ import BookPageHeader from "../components/BookPageHeader.jsx";
 import BookPageCategories from "../components/BookPageCategories.jsx";
 import BookPageNav from "../components/BookPageNav.jsx";
 
-const API_URL = "http://localhost:8080/api/books";
-const GENRE_API_URL = "http://localhost:8080/api/genres";
+const API_URL = "http://localhost:8080/api/v1/books";
+const GENRE_API_URL = "http://localhost:8080/api/v1/genres";
 
 function BooksList() {
     const navigate = useNavigate();

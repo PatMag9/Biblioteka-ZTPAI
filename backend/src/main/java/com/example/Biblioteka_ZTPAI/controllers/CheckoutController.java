@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/checkout")
+@RequestMapping("/api/v1/checkout")
 public class CheckoutController {
     private final CheckoutService checkoutService;
 

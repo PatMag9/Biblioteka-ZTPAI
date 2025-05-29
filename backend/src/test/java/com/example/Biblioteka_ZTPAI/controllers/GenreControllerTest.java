@@ -82,7 +82,7 @@ public class GenreControllerTest {
 
         when(genreService.getGenres()).thenReturn(genres);
 
-        mockMvc.perform(get("/api/genres")
+        mockMvc.perform(get("/api/v1/genres")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

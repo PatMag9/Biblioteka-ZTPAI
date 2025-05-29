@@ -54,7 +54,7 @@ class AuthControllerTest {
     void register_ShouldReturnAuthenticationResponse() throws Exception {
         Mockito.when(authService.register(Mockito.any(RegisterRequest.class))).thenReturn(authResponse);
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isOk())
@@ -65,7 +65,7 @@ class AuthControllerTest {
     void login_ShouldReturnAuthenticationResponse() throws Exception {
         Mockito.when(authService.login(Mockito.any(LoginRequest.class))).thenReturn(authResponse);
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
@@ -74,7 +74,7 @@ class AuthControllerTest {
 
     @Test
     void logout_ShouldReturnOk() throws Exception {
-        mockMvc.perform(post("/api/auth/logout"))
+        mockMvc.perform(post("/api/v1/auth/logout"))
                 .andExpect(status().isOk());
     }
 }

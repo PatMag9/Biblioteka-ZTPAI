@@ -89,7 +89,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getBooks())
                 .thenReturn(ResponseEntity.ok(Collections.singletonList(getSampleBook())));
 
-        mockMvc.perform(get("/api/books")
+        mockMvc.perform(get("/api/v1/books")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Test Book"))
@@ -102,7 +102,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getBookById(1))
                 .thenReturn(ResponseEntity.ok(book));
 
-        mockMvc.perform(get("/api/books/{bookId}", 1)
+        mockMvc.perform(get("/api/v1/books/{bookId}", 1)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idBook").value(1))
@@ -115,7 +115,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getBookById(99999))
                 .thenReturn(ResponseEntity.notFound().build());
 
-        mockMvc.perform(get("/api/books/{bookId}", 99999)
+        mockMvc.perform(get("/api/v1/books/{bookId}", 99999)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());
     }
@@ -125,7 +125,7 @@ public class BookControllerTest {
         Mockito.when(bookService.deleteBook(1))
                 .thenReturn(ResponseEntity.noContent().build());
 
-        mockMvc.perform(delete("/api/books/{bookId}", 1)
+        mockMvc.perform(delete("/api/v1/books/{bookId}", 1)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
@@ -135,7 +135,7 @@ public class BookControllerTest {
         Mockito.when(bookService.deleteBook(999))
                 .thenReturn(ResponseEntity.notFound().build());
 
-        mockMvc.perform(delete("/api/books/{bookId}", 999)
+        mockMvc.perform(delete("/api/v1/books/{bookId}", 999)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());
     }
@@ -149,7 +149,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getBookCopiesByBookId(1))
                 .thenReturn(ResponseEntity.ok(Collections.singletonList(copy)));
 
-        mockMvc.perform(get("/api/books/{bookId}/copies", 1)
+        mockMvc.perform(get("/api/v1/books/{bookId}/copies", 1)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id_book_copy").value(1))
@@ -165,7 +165,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getPublisherByBookCopyId(1))
                 .thenReturn(ResponseEntity.ok(publisher));
 
-        mockMvc.perform(get("/api/books/copies/{copyId}/publisher", 1)
+        mockMvc.perform(get("/api/v1/books/copies/{copyId}/publisher", 1)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id_publishers").value(1))
@@ -179,7 +179,7 @@ public class BookControllerTest {
         Mockito.when(bookService.getAuthorsByBookId(1))
                 .thenReturn(ResponseEntity.ok(Set.of(author)));
 
-        mockMvc.perform(get("/api/books/{bookId}/authors", 1)
+        mockMvc.perform(get("/api/v1/books/{bookId}/authors", 1)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("John"))

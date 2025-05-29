@@ -5,7 +5,7 @@ import BookPageHeader from "../components/BookPageHeader.jsx";
 import BookPageCategories from "../components/BookPageCategories.jsx";
 
 
-const API_URL = "http://localhost:8080/api/books";
+const API_URL = "http://localhost:8080/api/v1/books";
 
 function BookDetails() {
     const navigate = useNavigate();
@@ -110,7 +110,7 @@ function BookDetails() {
         if (!token || copies.length === 0) return;
 
         copies.forEach((copy) => {
-            fetch(`http://localhost:8080/api/checkout/bookCopyStatus/${copy.id_book_copy}`, {
+            fetch(`http://localhost:8080/api/v1/checkout/bookCopyStatus/${copy.id_book_copy}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -140,7 +140,7 @@ function BookDetails() {
     }, [copies, token]);
 
     const handleReserve = (bookCopyId) => {
-        fetch(`http://localhost:8080/api/checkout/reserve/${bookCopyId}`, {
+        fetch(`http://localhost:8080/api/v1/checkout/reserve/${bookCopyId}`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -161,7 +161,7 @@ function BookDetails() {
     };
 
     const handleCancelReservation = (bookCopyId) => {
-        fetch(`http://localhost:8080/api/checkout/cancelReservation/${bookCopyId}`, {
+        fetch(`http://localhost:8080/api/v1/checkout/cancelReservation/${bookCopyId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -179,7 +179,7 @@ function BookDetails() {
     };
 
     const refreshCopyStatus = (bookCopyId) => {
-        fetch(`http://localhost:8080/api/checkout/bookCopyStatus/${bookCopyId}`, {
+        fetch(`http://localhost:8080/api/v1/checkout/bookCopyStatus/${bookCopyId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

@@ -1,6 +1,5 @@
 package com.example.Biblioteka_ZTPAI.configs;
 
-import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +31,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests( auth -> {
-                    auth.requestMatchers("/api/auth/**", "/api/docs/**", "/test/**").permitAll();
+                    auth.requestMatchers("/api/v1/auth/**", "/api/v1/docs/**", "/test/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement()
