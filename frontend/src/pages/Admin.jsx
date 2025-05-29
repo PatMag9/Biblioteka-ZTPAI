@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 const AdminPage = () => {
     const navigate = useNavigate();
@@ -8,6 +9,7 @@ const AdminPage = () => {
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -23,6 +25,7 @@ const AdminPage = () => {
 
         if (isTokenExpired(token)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
             return;
         }
@@ -43,6 +46,7 @@ const AdminPage = () => {
 
     return (
         <div style={{ padding: 20 }}>
+            <BookPageHeader/>
             <h1>Panel Admina</h1>
             <button onClick={() => navigate('/admin/books')} style={{ margin: 10, padding: '10px 20px' }}>
                 Książki

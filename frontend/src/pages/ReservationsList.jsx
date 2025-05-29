@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import "../styles/AdminPages.css"
 import { jwtDecode } from "jwt-decode";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 
 
@@ -14,6 +15,7 @@ function ReservationsList() {
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -29,6 +31,7 @@ function ReservationsList() {
 
         if (isTokenExpired(token)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
             return;
         }
@@ -108,7 +111,7 @@ function ReservationsList() {
 
     return (
         <div className="admin-container">
-            {console.log(reservations)}
+            <BookPageHeader/>
             <h1>Rezerwacje</h1>
             <div className="admin-book-list">
                 <div className="admin-book-list-header">

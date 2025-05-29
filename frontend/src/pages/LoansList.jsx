@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AdminPages.css";
 import { jwtDecode } from "jwt-decode";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 function LoansList() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ function LoansList() {
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -27,6 +29,7 @@ function LoansList() {
 
         if (isTokenExpired(token)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
             return;
         }
@@ -102,6 +105,7 @@ function LoansList() {
 
     return (
         <div className="admin-container">
+            <BookPageHeader/>
             <h1>Wypożyczenia</h1>
             <div className="admin-book-list">
                 <div className="admin-book-list-header">

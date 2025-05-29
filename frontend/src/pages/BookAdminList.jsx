@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import "../styles/AdminPages.css"
 import { jwtDecode } from "jwt-decode";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 function BookAdminList() {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ function BookAdminList() {
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -34,6 +36,7 @@ function BookAdminList() {
 
         if (isTokenExpired(token)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
             return;
         }
@@ -159,6 +162,7 @@ function BookAdminList() {
 
     return (
         <div className="admin-container">
+            <BookPageHeader/>
             <h1>Książki</h1>
             <div className="admin-book-list">
                 <div className="admin-book-list-header">
@@ -174,7 +178,7 @@ function BookAdminList() {
                     ) : (
                         books.map(book => (
                             <div className="admin-book-card" key={book.idBook}>
-                                <div className="admin-book-card-element book-cover">
+                                <div className="admin-book-card-element book-cover-admin">
                                     <Link to={`/book/${book.idBook}`}>
                                         {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art"/>}
                                     </Link>

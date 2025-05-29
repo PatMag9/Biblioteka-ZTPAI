@@ -20,6 +20,7 @@ function BookDetails() {
     useEffect(() => {
         const tokenFromStorage = localStorage.getItem("jwtToken");
         if (!tokenFromStorage) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -34,6 +35,7 @@ function BookDetails() {
 
         if (isTokenExpired(tokenFromStorage)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
             return;
         }
@@ -200,7 +202,6 @@ function BookDetails() {
 
     return (
         <div className="container">
-            {console.log(book)}
             <BookPageHeader/>
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>

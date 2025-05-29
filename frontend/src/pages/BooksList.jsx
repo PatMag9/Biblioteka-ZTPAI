@@ -18,6 +18,7 @@ function BooksList() {
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
+            alert("Brak tokenu uwierzytelniającego JWT.");
             navigate("/");
             return;
         }
@@ -33,7 +34,9 @@ function BooksList() {
 
         if (isTokenExpired(token)) {
             localStorage.removeItem("jwtToken");
+            alert("Token uwierzytelniający JWT wygasł.");
             navigate("/");
+            return;
         }
 
         fetchBooks();
