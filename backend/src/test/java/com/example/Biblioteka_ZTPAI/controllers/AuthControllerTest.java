@@ -71,4 +71,10 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("fake-jwt-token"));
     }
+
+    @Test
+    void logout_ShouldReturnOk() throws Exception {
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isOk());
+    }
 }
