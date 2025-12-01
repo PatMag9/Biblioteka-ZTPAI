@@ -20,6 +20,7 @@ public class Book {
     @Column(name = "id_book")
     private Integer idBook;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
 
     @ManyToOne

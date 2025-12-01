@@ -6,7 +6,12 @@ import com.example.Biblioteka_ZTPAI.models.BookCopy;
 import com.example.Biblioteka_ZTPAI.models.Publisher;
 import com.example.Biblioteka_ZTPAI.repositories.BookCopyRepository;
 import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
+import com.example.Biblioteka_ZTPAI.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +27,28 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
 
-    public ResponseEntity<Object> getBooks() {
-        return ResponseEntity.ok(this.bookRepository.findAll());
+    public ResponseEntity<Object> getBooks(
+            String search,
+            String genre,
+            String author,
+            String sort,
+            String order,
+            int page,
+            int size
+    ) {
+
+        Sort.Direction direction = order.equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+
+        Page<Book> books = bookRepository.findAll(
+                BookSpecification.filterBooks(search, genre, author),
+                pageable
+        );
+
+        return ResponseEntity.ok(books);
     }
 
     public ResponseEntity<Object> getBookById(int bookId) {

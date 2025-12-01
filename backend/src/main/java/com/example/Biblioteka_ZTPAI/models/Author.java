@@ -17,9 +17,10 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_author;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String surname;
 
     @ManyToMany(mappedBy = "authors")

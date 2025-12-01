@@ -13,8 +13,16 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Object> getBooks() {
-        return bookService.getBooks();
+    public ResponseEntity<Object> getBooks(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false, defaultValue = "title") String sort,
+            @RequestParam(required = false, defaultValue = "asc") String order,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "20") int size
+    ) {
+        return bookService.getBooks(search, genre, author, sort, order, page, size);
     }
 
     @GetMapping("/{bookId}")
