@@ -22,7 +22,7 @@ function BookPageCategories({ onSortChange }) {
                 </div>
 
                 <div className="nav-element books-publisher"
-                     onClick={() => onSortChange("author")}>
+                     onClick={() => onSortChange("authors")}>
                     <div className="nav-text">Autorzy</div>
                     <div className="nav-line"></div>
                 </div>

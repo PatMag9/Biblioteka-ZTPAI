@@ -44,19 +44,31 @@ function BooksList() {
         fetchGenres();
     }, [navigate]);
 
-    const fetchBooks = () => {
-        fetch(API_URL, {
+    const fetchBooks = (params = {}) => {
+        const token = localStorage.getItem("jwtToken");
+
+        const query = new URLSearchParams({
+            sort: params.sort || "title",
+            order: params.order || "asc",
+            page: params.page || 0,
+            size: params.size || 20,
+            search: params.search || "",
+            genre: params.genre || "",
+            authors: params.author || "",
+        }).toString();
+
+        fetch(`${API_URL}?${query}`, {
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
+                "Authorization": `Bearer ${token}`,
             },
         })
-            .then((response) => response.json())
-            .then((data) => {
-                setBooks(data);
-                fetchAuthorsForBooks(data);
+            .then(res => res.json())
+            .then(data => {
+                setBooks(data.content);
+                fetchAuthorsForBooks(data.content);
                 setIsLoading(false);
             })
-            .catch((error) => console.error("Błąd:", error));
+            .catch(error => console.error("Błąd:", error));
     };
 
     const fetchAuthorsForBooks = async (books) => {
@@ -92,65 +104,24 @@ function BooksList() {
             .catch((error) => console.error("Błąd:", error));
     };
 
-    const sortBooks = (books, type) => {
-        const sorted = [...books];
-        switch(type) {
-            case "title":
-                sorted.sort((a, b) => a.title.localeCompare(b.title));
-                break;
-            case "author":
-                sorted.sort((a, b) => {
-                    const aAuthor = authorsMap[a.idBook]?.[0];
-                    const bAuthor = authorsMap[b.idBook]?.[0];
-
-                    const aName = aAuthor ? (aAuthor.surname || aAuthor.name) : "";
-                    const bName = bAuthor ? (bAuthor.surname || bAuthor.name) : "";
-
-                    return aName.localeCompare(bName);
-                });
-                break;
-            case "genre":
-                sorted.sort((a, b) =>
-                    a.genre.genre_name.localeCompare(b.genre.genre_name)
-                );
-                break;
-
-            default:
-                break;
-        }
-        return sorted;
+    const handleCategoryClick = (sortField) => {
+        setIsLoading(true);
+        fetchBooks({ sort: sortField, order: "asc" });
     };
 
-    const handleSortChange = (type) => {
-        setSortType(type);
-    };
-
-    useEffect(() => {
-        fetchBooks();
-        fetchGenres();
-    }, []);
-
-    const handleChange = (e) => {
-        if (e.target.name === "genre") {
-            const selectedGenre = genres.find((genre) => genre.id_genre === parseInt(e.target.value));
-            setNewBook({ ...newBook, genre: selectedGenre });
-        } else {
-            setNewBook({ ...newBook, [e.target.name]: e.target.value });
-        }
-    };
 
     return (
         <div className="container">
             <BookPageHeader/>
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
-                <BookPageCategories onSortChange={handleSortChange} />
+                <BookPageCategories onSortChange={handleCategoryClick} />
                 <BookPageNav/>
                 <section className="book-list">
                     {isLoading ? (
                         <p>Ładowanie książek...</p>
                     ) : (
-                        (sortType ? sortBooks(books, sortType) : books).map(book => (
+                        books.map(book => (
                             <div className="book-card" key={book.idBook}>
                                 <div className="book-cover">
                                     <Link to={`/book/${book.idBook}`}>
