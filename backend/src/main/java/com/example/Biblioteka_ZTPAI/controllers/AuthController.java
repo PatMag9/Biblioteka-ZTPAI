@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -36,5 +38,12 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         return authService.logout();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refresh(@RequestBody Map<String, String> request) {
+        String requestRefreshToken = request.get("refreshToken");
+        AuthenticationResponse response = authService.refreshToken(requestRefreshToken);
+        return ResponseEntity.ok(response);
     }
 }

@@ -28,6 +28,7 @@ public class AuthService {
     private final RabbitTemplate rabbitTemplate;
     private static final String EXCHANGE  = "registerExchange";
     private static final String ROUTING_KEY  = "registerRoutingKey";
+    private final RefreshTokenService refreshTokenService;
 
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -64,11 +65,13 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = refreshTokenService.createRefreshToken(user);
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken.getToken())
                 .build();
     }
 
@@ -76,4 +79,22 @@ public class AuthService {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Logged out successfully");
     }
+
+    public AuthenticationResponse refreshToken(String requestRefreshToken) {
+        RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken);
+
+        if (!refreshTokenService.isValid(refreshToken)) {
+            throw new RuntimeException("Refresh token expired");
+        }
+
+        var user = refreshToken.getUser();
+
+        var newAccessToken = jwtService.generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(newAccessToken)
+                .refreshToken(requestRefreshToken)
+                .build();
+    }
+
 }
