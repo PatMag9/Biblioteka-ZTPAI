@@ -30,6 +30,7 @@
     flex-direction: row;
 }
 .header-right-side input{
+    min-width: 550px;
     padding: 5px 10px;
     border-radius: 25px;
     border: 1px solid #ccc;

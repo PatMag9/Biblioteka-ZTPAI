@@ -14,6 +14,7 @@ function BooksList() {
     const [genres, setGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [authorsMap, setAuthorsMap] = useState({});
+    const [sortType, setSortType] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -91,6 +92,39 @@ function BooksList() {
             .catch((error) => console.error("Błąd:", error));
     };
 
+    const sortBooks = (books, type) => {
+        const sorted = [...books];
+        switch(type) {
+            case "title":
+                sorted.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case "author":
+                sorted.sort((a, b) => {
+                    const aAuthor = authorsMap[a.idBook]?.[0];
+                    const bAuthor = authorsMap[b.idBook]?.[0];
+
+                    const aName = aAuthor ? (aAuthor.surname || aAuthor.name) : "";
+                    const bName = bAuthor ? (bAuthor.surname || bAuthor.name) : "";
+
+                    return aName.localeCompare(bName);
+                });
+                break;
+            case "genre":
+                sorted.sort((a, b) =>
+                    a.genre.genre_name.localeCompare(b.genre.genre_name)
+                );
+                break;
+
+            default:
+                break;
+        }
+        return sorted;
+    };
+
+    const handleSortChange = (type) => {
+        setSortType(type);
+    };
+
     useEffect(() => {
         fetchBooks();
         fetchGenres();
@@ -110,13 +144,13 @@ function BooksList() {
             <BookPageHeader/>
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
-                <BookPageCategories/>
+                <BookPageCategories onSortChange={handleSortChange} />
                 <BookPageNav/>
                 <section className="book-list">
                     {isLoading ? (
                         <p>Ładowanie książek...</p>
                     ) : (
-                        books.map(book => (
+                        (sortType ? sortBooks(books, sortType) : books).map(book => (
                             <div className="book-card" key={book.idBook}>
                                 <div className="book-cover">
                                     <Link to={`/book/${book.idBook}`}>
