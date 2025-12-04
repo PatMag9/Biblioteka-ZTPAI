@@ -8,7 +8,12 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AuthorMapper.class, GenreMapper.class, PublisherMapper.class})
+@Mapper(componentModel = "spring", uses = {
+        AuthorMapper.class,
+        GenreMapper.class,
+        PublisherMapper.class,
+        BookCopyMapper.class
+})
 public interface BookMapper {
 
     @Mapping(source = "idBook", target = "id")
@@ -16,8 +21,12 @@ public interface BookMapper {
     @Mapping(target = "authors", expression = "java(book.getAuthors().stream().map(a -> a.getName() + \" \" + (a.getSurname() != null ? a.getSurname() : \"\")).toList())")
     BookListDTO toListDTO(Book book);
 
-    @Mapping(source = "idBook", target = "id")
-    BookDTO toDTO(Book book);
-
     List<BookListDTO> toListDTO(List<Book> books);
+
+
+    @Mapping(source = "idBook", target = "id")
+    @Mapping(source = "genre", target = "genre")
+    @Mapping(source = "authors", target = "authors")
+    @Mapping(source = "bookCopies", target = "copies")
+    BookDTO toDTO(Book book);
 }
