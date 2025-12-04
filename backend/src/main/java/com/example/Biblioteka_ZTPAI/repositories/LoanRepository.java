@@ -26,6 +26,6 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     """)
     List<LoanUserBookDTO> findActiveLoansWithUserAndBook();
 
-    @Query("SELECT l FROM Loan l WHERE l.bookCopy.id_book_copy = :bookCopyId AND l.endDate IS NULL")
+    @Query("SELECT l FROM Loan l WHERE l.bookCopy.idBookCopy = :bookCopyId AND l.endDate IS NULL")
     Optional<Loan> findActiveLoanByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
 }

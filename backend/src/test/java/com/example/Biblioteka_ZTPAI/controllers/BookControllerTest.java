@@ -146,7 +146,7 @@ public class BookControllerTest {
     @Test
     void getBookCopies_shouldReturnCopies() throws Exception {
         BookCopy copy = new BookCopy();
-        copy.setId_book_copy(1);
+        copy.setIdBookCopy(1);
         copy.setIsbn("123-456-789");
 
         Mockito.when(bookService.getBookCopiesByBookId(1))
@@ -162,8 +162,8 @@ public class BookControllerTest {
     @Test
     void getPublisherByBookCopyId_shouldReturnPublisher() throws Exception {
         Publisher publisher = new Publisher();
-        publisher.setId_publishers(1);
-        publisher.setPublishers_name("PublisherName");
+        publisher.setIdPublishers(1);
+        publisher.setPublishersName("PublisherName");
 
         Mockito.when(bookService.getPublisherByBookCopyId(1))
                 .thenReturn(ResponseEntity.ok(publisher));

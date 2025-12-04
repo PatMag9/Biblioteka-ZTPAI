@@ -1,5 +1,7 @@
 package com.example.Biblioteka_ZTPAI.services;
 
+import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
+import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
 import com.example.Biblioteka_ZTPAI.models.Author;
 import com.example.Biblioteka_ZTPAI.models.Book;
 import com.example.Biblioteka_ZTPAI.models.BookCopy;
@@ -8,10 +10,7 @@ import com.example.Biblioteka_ZTPAI.repositories.BookCopyRepository;
 import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
 import com.example.Biblioteka_ZTPAI.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
+    private final BookMapper bookMapper;
 
     public ResponseEntity<Object> getBooks(
             String search,
@@ -37,18 +37,42 @@ public class BookService {
             int size
     ) {
 
-        Sort.Direction direction = order.equalsIgnoreCase("desc")
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
+        Page<Book> books;
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+        boolean sortByAuthor = "authors".equalsIgnoreCase(sort);
 
-        Page<Book> books = bookRepository.findAll(
-                BookSpecification.filterBooks(search, genre, author),
-                pageable
+        Pageable pageable;
+
+        if (sortByAuthor) {
+            pageable = PageRequest.of(page, size);
+
+            books = bookRepository.findAllSortedByAuthorName(
+                    safe(search),
+                    safe(genre),
+                    safe(author),
+                    pageable
+            );
+        } else {
+            Sort.Direction direction =
+                    order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+            pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+
+            books = bookRepository.findAll(
+                    BookSpecification.filterBooks(search, genre, author),
+                    pageable
+            );
+        }
+
+        List<BookListDTO> dtos = bookMapper.toListDTO(books.getContent());
+
+        return ResponseEntity.ok(
+                new PageImpl<>(dtos, pageable, books.getTotalElements())
         );
+    }
 
-        return ResponseEntity.ok(books);
+    private String safe(String s) {
+        return (s == null || s.isBlank()) ? null : s.toLowerCase();
     }
 
     public ResponseEntity<Object> getBookById(int bookId) {
