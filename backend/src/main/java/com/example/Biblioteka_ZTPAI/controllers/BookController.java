@@ -13,7 +13,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Object> getBooks(
+    public ResponseEntity<?> getBooks(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String author,
