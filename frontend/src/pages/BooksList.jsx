@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/BookPages.css";
 import BookPageHeader from "../components/BookPageHeader.jsx";
 import BookPageCategories from "../components/BookPageCategories.jsx";
 import BookPageNav from "../components/BookPageNav.jsx";
 
 const API_URL = "http://localhost:8080/api/v1/books";
-const GENRE_API_URL = "http://localhost:8080/api/v1/genres";
 
 function BooksList() {
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
-    const [genres, setGenres] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [authorsMap, setAuthorsMap] = useState({});
-    const [sortType, setSortType] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -41,7 +37,6 @@ function BooksList() {
         }
 
         fetchBooks();
-        fetchGenres();
     }, [navigate]);
 
     const fetchBooks = (params = {}) => {
@@ -50,7 +45,7 @@ function BooksList() {
         const query = new URLSearchParams({
             sort: params.sort || "title",
             order: params.order || "asc",
-            page: params.page || 0,
+            page: params.page ?? currentPage,
             size: params.size || 20,
             search: params.search || "",
             genre: params.genre || "",
@@ -65,43 +60,11 @@ function BooksList() {
             .then(res => res.json())
             .then(data => {
                 setBooks(data.content);
-                fetchAuthorsForBooks(data.content);
+                setCurrentPage(data.number);
+                setTotalPages(data.totalPages);
                 setIsLoading(false);
             })
             .catch(error => console.error("Błąd:", error));
-    };
-
-    const fetchAuthorsForBooks = async (books) => {
-        const token = localStorage.getItem("jwtToken");
-
-        const authorsData = await Promise.all(
-            books.map((book) =>
-                fetch(`${API_URL}/${book.idBook}/authors`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    },
-                })
-                    .then((res) => res.ok ? res.json() : [])
-                    .catch(() => [])
-            )
-        );
-
-        const authorsMap = {};
-        books.forEach((book, index) => {
-            authorsMap[book.idBook] = authorsData[index];
-        });
-        setAuthorsMap(authorsMap);
-    };
-
-    const fetchGenres = () => {
-        fetch(GENRE_API_URL, {
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => setGenres(data))
-            .catch((error) => console.error("Błąd:", error));
     };
 
     const handleCategoryClick = (sortField) => {
@@ -112,7 +75,7 @@ function BooksList() {
 
     return (
         <div className="container">
-            <BookPageHeader/>
+            <BookPageHeader />
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
                 <BookPageCategories onSortChange={handleCategoryClick} />
@@ -122,28 +85,34 @@ function BooksList() {
                         <p>Ładowanie książek...</p>
                     ) : (
                         books.map(book => (
-                            <div className="book-card" key={book.idBook}>
+                            <div className="book-card" key={book.id}>
                                 <div className="book-cover">
-                                    <Link to={`/book/${book.idBook}`}>
-                                        {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art" />}
+                                    <Link to={`/book/${book.id}`}>
+                                        {book.cover && (
+                                            <img src={`/uploads/${book.cover}`} alt="cover_art" />
+                                        )}
                                     </Link>
                                 </div>
+
                                 <div className="book-details">
-                                    <p><strong>Tytuł: </strong>
-                                        <Link to={`/book/${book.idBook}`}>{book.title}</Link>
+                                    <p>
+                                        <strong>Tytuł: </strong>
+                                        <Link to={`/book/${book.id}`}>{book.title}</Link>
                                     </p>
-                                    <p><strong>Autor/rzy:</strong>
-                                        {authorsMap[book.idBook] && authorsMap[book.idBook].length > 0
-                                            ? authorsMap[book.idBook].map((author, index) => (
-                                                <span key={author.id_author}>
-                                                    {author.name} {author.surname}{index < authorsMap[book.idBook].length - 1 ? ', ' : ''}
-                                                </span>
-                                            ))
+
+                                    <p>
+                                        <strong>Autor/rzy:</strong>{" "}
+                                        {book.authors && book.authors.length > 0
+                                            ? book.authors.join(", ")
                                             : "brak danych"}
                                     </p>
-                                    <p><strong>Gatunek:</strong> {book.genre.genre_name}</p>
+
+                                    <p>
+                                        <strong>Gatunek:</strong> {book.genre || "brak danych"}
+                                    </p>
                                 </div>
-                                <Link to={`/book/${book.idBook}`}>
+
+                                <Link to={`/book/${book.id}`}>
                                     <button className="reserve-button">Zobacz</button>
                                 </Link>
                             </div>
