@@ -6,19 +6,24 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
-@Builder
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "publishers")
 public class Publisher {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_publishers;
+    @Column(name = "id_publishers")
+    private Integer idPublishers;
 
-    private String publishers_name;
+    @Column(name = "publishers_name", nullable = false)
+    private String publishersName;
 
     @OneToMany(mappedBy = "publisher")
     @JsonManagedReference

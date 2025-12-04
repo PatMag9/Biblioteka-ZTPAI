@@ -14,9 +14,10 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {

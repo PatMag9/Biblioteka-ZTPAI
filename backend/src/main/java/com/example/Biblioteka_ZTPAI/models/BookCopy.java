@@ -1,7 +1,5 @@
 package com.example.Biblioteka_ZTPAI.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,37 +7,37 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "book_copies")
 public class BookCopy {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_book_copy;
+    @Column(name = "id_book_copy")
+    private Integer idBookCopy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_book")
-    @JsonManagedReference
     private Book book;
 
     @Column(name = "isbn", length = 17)
     private String isbn;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_publisher")
-    @JsonBackReference
     private Publisher publisher;
 
-    private Integer year_published;
+    @Column(name = "year_published")
+    private Integer yearPublished;
 
     @OneToMany(mappedBy = "bookCopy")
-    @JsonBackReference
     private Set<Reservation> reservations;
 
     @OneToMany(mappedBy = "bookCopy")
-    @JsonBackReference
     private Set<Loan> loans;
 }

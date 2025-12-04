@@ -8,9 +8,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Builder
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "roles")
 public class Role {
