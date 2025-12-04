@@ -1,0 +1,23 @@
+package com.example.Biblioteka_ZTPAI.mappers;
+
+import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
+import com.example.Biblioteka_ZTPAI.models.Book;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring", uses = {AuthorMapper.class, GenreMapper.class, PublisherMapper.class})
+public interface BookMapper {
+
+    @Mapping(source = "idBook", target = "id")
+    @Mapping(source = "genre.genreName", target = "genre")
+    @Mapping(target = "authors", expression = "java(book.getAuthors().stream().map(a -> a.getName() + \" \" + (a.getSurname() != null ? a.getSurname() : \"\")).toList())")
+    BookListDTO toListDTO(Book book);
+
+    @Mapping(source = "idBook", target = "id")
+    BookDTO toDTO(Book book);
+
+    List<BookListDTO> toListDTO(List<Book> books);
+}
