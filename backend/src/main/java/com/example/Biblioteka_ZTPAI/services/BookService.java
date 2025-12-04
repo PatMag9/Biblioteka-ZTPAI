@@ -1,5 +1,6 @@
 package com.example.Biblioteka_ZTPAI.services;
 
+import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
 import com.example.Biblioteka_ZTPAI.models.Author;
@@ -26,6 +27,10 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
     private final BookMapper bookMapper;
+
+    private String safe(String s) {
+        return (s == null || s.isBlank()) ? null : s.toLowerCase();
+    }
 
     public ResponseEntity<Object> getBooks(
             String search,
@@ -71,45 +76,14 @@ public class BookService {
         );
     }
 
-    private String safe(String s) {
-        return (s == null || s.isBlank()) ? null : s.toLowerCase();
-    }
-
     public ResponseEntity<Object> getBookById(int bookId) {
-        Optional<Book> book = bookRepository.findById(bookId);
 
-        if (book.isPresent()) {
-            return ResponseEntity.ok(book.get());
-        } else {
-            throw new NoSuchElementException("Book not found");
-        }
-    }
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
-    public ResponseEntity<Object> getBookCopiesByBookId(int bookId) {
-        List<BookCopy> copies = bookCopyRepository.findAllByBook_IdBook(bookId);
-        return ResponseEntity.ok(copies);
-    }
+        BookDTO dto = bookMapper.toDTO(book);
 
-    public ResponseEntity<Object> getPublisherByBookCopyId(int bookCopyId) {
-        Optional<BookCopy> bookCopy = bookCopyRepository.findById(bookCopyId);
-        if (bookCopy.isPresent()) {
-            Publisher publisher = bookCopy.get().getPublisher();
-            if (publisher != null) {
-                return ResponseEntity.ok(publisher);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    public ResponseEntity<Object> getAuthorsByBookId(int bookId) {
-        Set<Author> authors = bookRepository.findAuthorsByBookId(bookId);
-        if (authors == null || authors.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(authors);
+        return ResponseEntity.ok(dto);
     }
 
     public ResponseEntity<Object> deleteBook(int bookId) {
