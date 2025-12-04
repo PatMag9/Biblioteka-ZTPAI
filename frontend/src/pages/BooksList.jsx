@@ -11,6 +11,8 @@ function BooksList() {
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -72,6 +74,10 @@ function BooksList() {
         fetchBooks({ sort: sortField, order: "asc" });
     };
 
+    const handlePageChange = (pageNumber) => {
+        setIsLoading(true);
+        fetchBooks({ page: pageNumber });
+    };
 
     return (
         <div className="container">
@@ -79,7 +85,12 @@ function BooksList() {
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
                 <BookPageCategories onSortChange={handleCategoryClick} />
-                <BookPageNav/>
+                <BookPageNav
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+
                 <section className="book-list">
                     {isLoading ? (
                         <p>Ładowanie książek...</p>
