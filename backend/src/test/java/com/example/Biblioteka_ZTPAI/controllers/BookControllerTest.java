@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class BookControllerTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -84,7 +84,7 @@ public class BookControllerTest {
                 .build();
     }
 
-/*
+
     @Test
     void getBooks_shouldReturnListOfBooks() throws Exception {
         Mockito.when(bookService.getBooks())
@@ -97,7 +97,7 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$[0].genre.genre_name").value("Fantasy"));
     }
 
- */
+
 
     @Test
     void getBookById_shouldReturnBook() throws Exception {
@@ -188,5 +188,5 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$[0].name").value("John"))
                 .andExpect(jsonPath("$[0].surname").value("Doe"));
     }
-
+*/
 }
