@@ -13,6 +13,7 @@ function BooksList() {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
+    const PAGE_SIZE = 3;
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -48,7 +49,7 @@ function BooksList() {
             sort: params.sort || "title",
             order: params.order || "asc",
             page: params.page ?? currentPage,
-            size: params.size || 20,
+            size: PAGE_SIZE,
             search: params.search || "",
             genre: params.genre || "",
             authors: params.author || "",

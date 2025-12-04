@@ -133,6 +133,10 @@ nav ul a{
     margin: 0 2px;
 }
 
+.page-numbers .active{
+    background: #1c8ed1;
+}
+
 button[page-active="true"] {
     background-color: #1c8ed1;
 }
