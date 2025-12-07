@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PublisherMapper {
 
-    @Mapping(source = "idPublishers", target = "id")
-    @Mapping(source = "publishersName", target = "name")
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
     PublisherDTO toDTO(Publisher publisher);
 }
