@@ -11,12 +11,10 @@ function BookDetails() {
     const { id } = useParams();
 
     const [book, setBook] = useState(null);
+    const [reviews, setReviews] = useState([]);
     const [copyStatuses, setCopyStatuses] = useState({});
     const [token, setToken] = useState(null);
 
-    // ───────────────────────────────────────────────────────────
-    // 1. WALIDACJA TOKENU
-    // ───────────────────────────────────────────────────────────
     useEffect(() => {
         const tokenFromStorage = localStorage.getItem("jwtToken");
         if (!tokenFromStorage) {
@@ -44,23 +42,40 @@ function BookDetails() {
         setToken(tokenFromStorage);
     }, [navigate]);
 
-    // ───────────────────────────────────────────────────────────
-    // 2. POBIERANIE DANYCH KSIĄŻKI (DTO)
-    // ───────────────────────────────────────────────────────────
+    // Pobranie danych książki
     useEffect(() => {
         if (!token) return;
 
-        fetch(`${API_URL}/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
+        fetch(`${API_URL}/${id}`, { headers: { Authorization: `Bearer ${token}` } })
             .then(res => res.json())
             .then(data => setBook(data))
             .catch(err => console.error("Błąd:", err));
     }, [id, token]);
 
-    // ───────────────────────────────────────────────────────────
-    // 3. STATUSY EGZEMPLARZY
-    // ───────────────────────────────────────────────────────────
+    // Pobranie recenzji książki
+    useEffect(() => {
+        if (!token) return;
+
+        fetch(`${API_URL}/${id}/reviews`, { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => res.json())
+            .then(data => setReviews(data))
+            .catch(err => console.error("Błąd pobierania recenzji:", err));
+    }, [id, token]);
+
+    const renderStars = (averageRating) => {
+        const fullStars = Math.floor(averageRating || 0);
+        const emptyStars = 5 - fullStars;
+        return (
+            <>
+                {Array.from({ length: fullStars }, (_, i) => (
+                    <span key={`full-${i}`} className="star full">★</span>
+                ))}
+                {Array.from({ length: emptyStars }, (_, i) => (
+                    <span key={`empty-${i}`} className="star empty">★</span>
+                ))}
+            </>
+        );
+    };
     useEffect(() => {
         if (!token || !book?.copies) return;
 
@@ -88,9 +103,6 @@ function BookDetails() {
         });
     }, [book, token]);
 
-    // ───────────────────────────────────────────────────────────
-    // 4. AKCJE REZERWACJI
-    // ───────────────────────────────────────────────────────────
     const refreshCopyStatus = (copyId) => {
         fetch(`http://localhost:8080/api/v1/checkout/bookCopyStatus/${copyId}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -128,9 +140,6 @@ function BookDetails() {
             });
     };
 
-    // ───────────────────────────────────────────────────────────
-    // 5. RENDER
-    // ───────────────────────────────────────────────────────────
     if (!book) return <p>Ładowanie...</p>;
 
     return (
@@ -148,7 +157,7 @@ function BookDetails() {
                             </div>
 
                             <div className="book-details">
-                                <p><strong>Tytuł: </strong> {book.title}</p>
+                                <p><strong>Tytuł: </strong>{book.title}</p>
 
                                 <p><strong>Autor/rzy: </strong>
                                     {book.authors?.map((a, index) => (
@@ -158,12 +167,18 @@ function BookDetails() {
                                     ))}
                                 </p>
 
-                                <p><strong>Gatunek: </strong> {book.genre?.name}</p>
-                                <p><strong>Opis: </strong> {book.description}</p>
+                                <p><strong>Gatunek: </strong>{book.genre?.name}</p>
+                                <p><strong>Opis: </strong>{book.description}</p>
+
+                                <p className="book-rating">
+                                    {renderStars(book.averageRating)}
+                                    <span className="review-count">
+                                        ({book.reviewCount || 0})
+                                    </span>
+                                </p>
                             </div>
                         </div>
 
-                        {/* EGZEMPLARZE */}
                         <section className="book-copies">
                             <h3>Egzemplarze książki</h3>
 
@@ -181,13 +196,11 @@ function BookDetails() {
                                     <tbody>
                                     {book.copies.map(copy => {
                                         const status = copyStatuses[copy.id] || {};
-
                                         const isLoaned = status.loaned;
                                         const isReserved = status.reserved;
                                         const reservedByUser = status.reservedByCurrentUser;
 
                                         let button = null;
-
                                         if (isLoaned) button = null;
                                         else if (isReserved && reservedByUser)
                                             button = (
@@ -218,6 +231,26 @@ function BookDetails() {
                                 <p>Brak dostępnych egzemplarzy.</p>
                             )}
                         </section>
+                    </div>
+
+                    <div className="book-page reviews-section">
+                        <h3>Recenzje</h3>
+                        {reviews.length === 0 ? (
+                            <p>Brak recenzji dla tej książki.</p>
+                        ) : (
+                            <ul className="reviews-list">
+                                {reviews.map(review => (
+                                    <li key={review.id} className="review-item">
+                                        <div className="review-header">
+                                            {renderStars(review.rating)}
+                                            <span className="review-username">{review.username}</span>
+                                            <span className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="review-text">{review.reviewText}</div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 </section>
             </main>

@@ -155,8 +155,6 @@ button[page-active="true"] {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    min-height: 500px;
-    height: 50vh;
 }
 
 .book-card {
@@ -228,6 +226,68 @@ button[page-active="true"] {
 
 .copies-table th {
     background-color: #f2f2f2;
+}
+
+/* Gwiazdki ocen */
+.star {
+    font-size: 1.2em;
+    margin-right: 2px;
+}
+
+.star.full {
+    color: #FFD700; /* żółty */
+}
+
+.star.empty {
+    color: #ccc; /* szary */
+}
+
+.book-rating {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.review-count {
+    margin-left: 6px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* Lista recenzji */
+.reviews-section {
+    margin-top: 30px;
+}
+
+.reviews-list {
+    list-style: none;
+    padding: 0;
+}
+
+.review-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.review-username {
+    font-weight: bold;
+}
+
+.review-date {
+    font-style: italic;
+    color: #666;
+}
+
+.review-text {
+    margin-top: 5px;
 }
 
 @media (max-width: 768px) {

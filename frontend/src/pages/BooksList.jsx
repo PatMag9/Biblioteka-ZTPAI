@@ -56,9 +56,7 @@ function BooksList() {
         }).toString();
 
         fetch(`${API_URL}?${query}`, {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            },
+            headers: { "Authorization": `Bearer ${token}` },
         })
             .then(res => res.json())
             .then(data => {
@@ -78,6 +76,21 @@ function BooksList() {
     const handlePageChange = (pageNumber) => {
         setIsLoading(true);
         fetchBooks({ page: pageNumber });
+    };
+
+    const renderStars = (averageRating) => {
+        const fullStars = Math.floor(averageRating || 0);
+        const emptyStars = 5 - fullStars;
+        return (
+            <>
+                {Array.from({ length: fullStars }, (_, i) => (
+                    <span key={`full-${i}`} className="star full">★</span>
+                ))}
+                {Array.from({ length: emptyStars }, (_, i) => (
+                    <span key={`empty-${i}`} className="star empty">★</span>
+                ))}
+            </>
+        );
     };
 
     return (
@@ -121,6 +134,14 @@ function BooksList() {
 
                                     <p>
                                         <strong>Gatunek:</strong> {book.genre || "brak danych"}
+                                    </p>
+
+                                    <p className="book-rating">
+                                        <strong>Ocena: </strong>
+                                        {renderStars(book.averageRating)}
+                                        <span className="review-count">
+                                            ({book.reviewCount ?? 0})
+                                        </span>
                                     </p>
                                 </div>
 
