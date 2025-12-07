@@ -12,6 +12,9 @@ function BookDetails() {
 
     const [book, setBook] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [userHasReview, setUserHasReview] = useState(false);
+    const [newReviewRating, setNewReviewRating] = useState(5);
+    const [newReviewText, setNewReviewText] = useState("");
     const [copyStatuses, setCopyStatuses] = useState({});
     const [token, setToken] = useState(null);
 
@@ -59,6 +62,23 @@ function BookDetails() {
         fetch(`${API_URL}/${id}/reviews`, { headers: { Authorization: `Bearer ${token}` } })
             .then(res => res.json())
             .then(data => setReviews(data))
+            .catch(err => console.error("Błąd pobierania recenzji:", err));
+    }, [id, token]);
+
+    useEffect(() => {
+        if (!token) return;
+
+        fetch(`${API_URL}/${id}/reviews`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setReviews(data);
+
+                const currentUser = JSON.parse(atob(token.split(".")[1])).sub;
+                const hasReview = data.some(r => r.username === currentUser);
+                setUserHasReview(hasReview);
+            })
             .catch(err => console.error("Błąd pobierania recenzji:", err));
     }, [id, token]);
 
@@ -137,6 +157,40 @@ function BookDetails() {
                 if (!res.ok) return alert("Błąd podczas anulowania rezerwacji.");
                 alert("Rezerwacja została anulowana.");
                 refreshCopyStatus(copyId);
+            });
+    };
+
+    //dodawanie recenzji
+    const handleAddReview = () => {
+        fetch(`${API_URL}/${id}/reviews`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                rating: newReviewRating,
+                reviewText: newReviewText
+            })
+        })
+            .then(async res => {
+                if (!res.ok) {
+                    const msg = await res.text();
+                    alert("Nie można dodać recenzji: " + msg);
+                    return;
+                }
+                alert("Recenzja dodana!");
+                return res.json();
+            })
+            .then(() => {
+                fetch(`${API_URL}/${id}/reviews`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        setReviews(data);
+                        setUserHasReview(true);
+                    });
             });
     };
 
@@ -231,6 +285,39 @@ function BookDetails() {
                                 <p>Brak dostępnych egzemplarzy.</p>
                             )}
                         </section>
+                    </div>
+
+                    <div className="add-review">
+                        <h3>Dodaj recenzję</h3>
+
+                        {userHasReview ? (
+                            <p className="review-warning">Dodałeś już recenzję tej książki.</p>
+                        ) : (
+                            <>
+                                <label>Ocena (1-5):</label>
+                                <select
+                                    value={newReviewRating}
+                                    onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
+                                >
+                                    {[1, 2, 3, 4, 5].map(n => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+
+                                <label>Treść recenzji:</label>
+                                <textarea
+                                    value={newReviewText}
+                                    onChange={(e) => setNewReviewText(e.target.value)}
+                                />
+
+                                <button
+                                    className="review-submit-btn"
+                                    onClick={handleAddReview}
+                                >
+                                    Wyślij recenzję
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     <div className="book-page reviews-section">

@@ -266,7 +266,11 @@ button[page-active="true"] {
 
 .review-item {
     border-bottom: 1px solid #ddd;
-    padding: 10px 0;
+    padding: 10px 12px;
+}
+
+.review-item:last-child {
+    border-bottom: none;
 }
 
 .review-header {
@@ -288,6 +292,45 @@ button[page-active="true"] {
 
 .review-text {
     margin-top: 5px;
+}
+
+.add-review {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.add-review label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.add-review textarea {
+    width: 100%;
+    min-height: 80px;
+    margin-top: 5px;
+}
+
+.review-submit-btn {
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #4a8cff;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.review-submit-btn:hover {
+    background: #2f6ee6;
+}
+
+.review-warning {
+    color: #cc0000;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {

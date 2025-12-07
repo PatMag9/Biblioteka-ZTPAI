@@ -31,11 +31,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO addOrUpdateReview(Integer bookId, Integer userId, ReviewCreateDTO dto) {
-        if (dto == null) throw new IllegalArgumentException("ReviewCreateDTO is null");
-        Integer rating = dto.getRating();
-        if (rating == null || rating < 1 || rating > 5) {
-            throw new IllegalArgumentException("Rating must be between 1 and 5");
+    public ReviewDTO addReview(Integer bookId, Integer userId, ReviewCreateDTO dto) {
+
+        if (reviewRepository.findByBookIdAndUserId(bookId, userId).isPresent()) {
+            throw new IllegalStateException("Użytkownik już dodał recenzję dla tej książki.");
         }
 
         Book book = bookRepository.findById(bookId)
@@ -43,18 +42,14 @@ public class ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        Review review = reviewRepository
-                .findByBookIdAndUserId(bookId, userId)
-                .orElse(Review.builder()
-                        .book(book)
-                        .user(user)
-                        .createdAt(LocalDateTime.now())
-                        .build()
-                );
-
-        review.setRating(rating);
-        review.setReviewText(dto.getReviewText());
-        review.setUpdatedAt(LocalDateTime.now());
+        Review review = Review.builder()
+                .book(book)
+                .user(user)
+                .rating(dto.getRating())
+                .reviewText(dto.getReviewText())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
         Review saved = reviewRepository.save(review);
         return reviewMapper.toDTO(saved);

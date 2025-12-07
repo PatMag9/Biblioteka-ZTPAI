@@ -6,6 +6,7 @@ import com.example.Biblioteka_ZTPAI.services.BookService;
 import com.example.Biblioteka_ZTPAI.services.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,11 @@ public class BookController {
             @Valid @RequestBody ReviewCreateDTO dto,
             @AuthenticationPrincipal User user
     ) {
-        return ResponseEntity.ok(reviewService.addOrUpdateReview(bookId, user.getId(), dto));
+        try {
+            return ResponseEntity.ok(reviewService.addReview(bookId, user.getId(), dto));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 }
