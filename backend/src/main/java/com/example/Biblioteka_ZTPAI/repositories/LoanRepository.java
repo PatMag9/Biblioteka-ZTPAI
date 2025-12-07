@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
     @Query("""
     SELECT new com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO(
-        l.id_loan, l.start_date, l.due_date, l.endDate,
+        l.id, l.start_date, l.due_date, l.endDate,
         u.username,
         b.title
     )
@@ -26,6 +26,6 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     """)
     List<LoanUserBookDTO> findActiveLoansWithUserAndBook();
 
-    @Query("SELECT l FROM Loan l WHERE l.bookCopy.idBookCopy = :bookCopyId AND l.endDate IS NULL")
+    @Query("SELECT l FROM Loan l WHERE l.bookCopy.id = :bookCopyId AND l.endDate IS NULL")
     Optional<Loan> findActiveLoanByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
 }

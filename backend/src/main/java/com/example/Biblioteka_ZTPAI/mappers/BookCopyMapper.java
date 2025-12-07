@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = { PublisherMapper.class })
 public interface BookCopyMapper {
 
-    @Mapping(source = "idBookCopy", target = "id")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "isbn", target = "isbn")
     @Mapping(source = "publisher", target = "publisher")
     @Mapping(source = "yearPublished", target = "yearPublished")

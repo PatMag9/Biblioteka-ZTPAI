@@ -19,11 +19,11 @@ public class Publisher {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_publishers")
-    private Integer idPublishers;
+    @Column(name = "id")
+    private Integer id;
 
-    @Column(name = "publishers_name", nullable = false)
-    private String publishersName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @OneToMany(mappedBy = "publisher")
     @JsonManagedReference

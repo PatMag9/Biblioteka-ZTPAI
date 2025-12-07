@@ -24,15 +24,23 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue
-    private Integer id_user;
+    @Column(name = "id")
+    private Integer id;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "password")
     private String password;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "users_roles",
-            joinColumns = @JoinColumn(name = "id_user"),
-            inverseJoinColumns = @JoinColumn(name = "id_role")
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
@@ -51,8 +59,8 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public User(Integer id_user, String username, String email, String password) {
-        this.id_user = id_user;
+    public User(Integer id, String username, String email, String password) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -71,7 +79,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> (GrantedAuthority) () -> "ROLE_" + role.getRoleName().toUpperCase())
+                .map(role -> (GrantedAuthority) () -> "ROLE_" + role.getName().toUpperCase())
                 .collect(Collectors.toSet());
     }
 

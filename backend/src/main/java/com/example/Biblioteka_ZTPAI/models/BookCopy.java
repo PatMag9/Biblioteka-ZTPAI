@@ -18,18 +18,18 @@ public class BookCopy {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_book_copy")
-    private Integer idBookCopy;
+    @Column(name = "id")
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_book")
+    @JoinColumn(name = "book_id")
     private Book book;
 
     @Column(name = "isbn", length = 17)
     private String isbn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_publisher")
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
     @Column(name = "year_published")

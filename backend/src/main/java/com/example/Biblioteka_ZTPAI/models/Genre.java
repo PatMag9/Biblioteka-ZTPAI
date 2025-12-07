@@ -17,11 +17,11 @@ public class Genre {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_genre")
-    private Integer idGenre;
+    @Column(name = "id")
+    private Integer id;
 
-    @Column(name = "genre_name")
-    private String genreName;
+    @Column(name = "name")
+    private String name;
 
     @OneToMany(mappedBy = "genre")
     private Set<Book> books;

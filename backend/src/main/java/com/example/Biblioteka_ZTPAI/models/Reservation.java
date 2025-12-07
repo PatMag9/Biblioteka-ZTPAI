@@ -18,18 +18,20 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_reservation;
+    @Column(name = "id")
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "id_book_copy", nullable = false)
+    @JoinColumn(name = "book_copy_id", nullable = false)
     @JsonManagedReference
     private BookCopy bookCopy;
 
+    @Column(name = "start_date")
     private LocalDateTime start_date;
     @Column(name = "end_date")
     private LocalDateTime endDate;

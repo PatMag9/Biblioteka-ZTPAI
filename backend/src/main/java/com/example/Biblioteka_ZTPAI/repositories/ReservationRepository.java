@@ -12,15 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
-    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.idBookCopy = :bookCopyId AND (r.endDate IS NULL OR r.endDate > CURRENT_TIMESTAMP)")
+    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.id = :bookCopyId AND (r.endDate IS NULL OR r.endDate > CURRENT_TIMESTAMP)")
     Optional<Reservation> findActiveReservationByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
-    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.idBookCopy = :bookCopyId AND r.user.id_user = :userId AND r.endDate IS NULL")
+    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.id = :bookCopyId AND r.user.id = :userId AND r.endDate IS NULL")
     Optional<Reservation> findActiveReservationByBookCopyAndUser(@Param("bookCopyId") Integer bookCopyId,
                                                                  @Param("userId") Integer userId);
 
     @Query("""
     SELECT new com.example.Biblioteka_ZTPAI.dto.ReservationUserBookDTO(
-        r.id_reservation, r.start_date, r.endDate,
+        r.id, r.start_date, r.endDate,
         u.username,
         b.title
     )

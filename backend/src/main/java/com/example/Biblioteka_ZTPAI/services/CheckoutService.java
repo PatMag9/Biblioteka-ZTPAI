@@ -52,7 +52,7 @@ public class CheckoutService {
 
     public boolean cancelReservation(Integer bookCopyId, User user) {
         Optional<Reservation> reservationOpt = reservationRepository
-                .findActiveReservationByBookCopyAndUser(bookCopyId, user.getId_user());
+                .findActiveReservationByBookCopyAndUser(bookCopyId, user.getId());
 
         if (reservationOpt.isPresent()) {
             Reservation reservation = reservationOpt.get();

@@ -18,8 +18,8 @@ public class Author {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_author")
-    private Integer idAuthor;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(nullable = false)
     private String name;

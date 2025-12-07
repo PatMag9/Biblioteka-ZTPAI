@@ -39,7 +39,7 @@ public class AuthService {
                 .roles(new HashSet<>())
                 .build();
 
-        Role userRole = roleRepository.findByRoleName("USER")
+        Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Could not find the 'USER' role"));
 
         user.addRole(userRole);

@@ -19,11 +19,11 @@ public class Role {
 
     @Id
     @GeneratedValue
-    @Column(name = "id_role")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "role_name")
-    private String roleName;
+    @Column(name = "name")
+    private String name;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference

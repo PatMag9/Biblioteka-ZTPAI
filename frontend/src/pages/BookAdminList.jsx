@@ -135,7 +135,7 @@ function BookAdminList() {
 
     const handleChange = (e) => {
         if (e.target.name === "genre") {
-            const selectedGenre = genres.find((genre) => genre.id_genre === parseInt(e.target.value));
+            const selectedGenre = genres.find((genre) => genre.id === parseInt(e.target.value));
             setNewBook({ ...newBook, genre: selectedGenre });
         } else {
             setNewBook({ ...newBook, [e.target.name]: e.target.value });

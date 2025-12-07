@@ -16,15 +16,15 @@ import java.util.List;
 })
 public interface BookMapper {
 
-    @Mapping(source = "idBook", target = "id")
-    @Mapping(source = "genre.genreName", target = "genre")
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "genre.name", target = "genre")
     @Mapping(target = "authors", expression = "java(book.getAuthors().stream().map(a -> a.getName() + \" \" + (a.getSurname() != null ? a.getSurname() : \"\")).toList())")
     BookListDTO toListDTO(Book book);
 
     List<BookListDTO> toListDTO(List<Book> books);
 
 
-    @Mapping(source = "idBook", target = "id")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "genre", target = "genre")
     @Mapping(source = "authors", target = "authors")
     @Mapping(source = "bookCopies", target = "copies")
