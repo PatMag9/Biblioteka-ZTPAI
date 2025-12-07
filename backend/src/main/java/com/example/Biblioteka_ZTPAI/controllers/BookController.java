@@ -1,8 +1,13 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
+import com.example.Biblioteka_ZTPAI.dto.book.ReviewCreateDTO;
+import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.services.BookService;
+import com.example.Biblioteka_ZTPAI.services.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     private final BookService bookService;
+    private final ReviewService reviewService;
 
     @GetMapping
     public ResponseEntity<?> getBooks(
@@ -33,6 +39,20 @@ public class BookController {
     @DeleteMapping("/{bookId}")
     public ResponseEntity<Object> deleteBook(@PathVariable int bookId) {
         return bookService.deleteBook(bookId);
+    }
+
+    @GetMapping("/{bookId}/reviews")
+    public ResponseEntity<Object> getReviews(@PathVariable Integer bookId) {
+        return ResponseEntity.ok(reviewService.getReviewsForBook(bookId));
+    }
+
+    @PostMapping("/{bookId}/reviews")
+    public ResponseEntity<Object> addReview(
+            @PathVariable Integer bookId,
+            @Valid @RequestBody ReviewCreateDTO dto,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(reviewService.addOrUpdateReview(bookId, user.getId(), dto));
     }
 
 }

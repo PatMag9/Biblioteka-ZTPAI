@@ -15,4 +15,6 @@ public class BookDTO {
     private String description;
     private List<BookAuthorDTO> authors;
     private List<BookCopyDTO> copies;
+    private Double averageRating;
+    private Integer reviewCount;
 }

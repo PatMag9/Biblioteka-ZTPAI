@@ -13,4 +13,6 @@ public class BookListDTO {
     private String genre;
     private String cover;
     private List<String> authors;
+    private Double averageRating;
+    private Integer reviewCount;
 }

@@ -3,8 +3,8 @@ package com.example.Biblioteka_ZTPAI.mappers;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.models.Book;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.example.Biblioteka_ZTPAI.repositories.ReviewRepository;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -29,4 +29,16 @@ public interface BookMapper {
     @Mapping(source = "authors", target = "authors")
     @Mapping(source = "bookCopies", target = "copies")
     BookDTO toDTO(Book book);
+
+    @AfterMapping
+    default void enrichBookListDTO(@MappingTarget BookListDTO dto, Book book, @Context ReviewRepository reviewRepository) {
+        dto.setAverageRating(reviewRepository.getAverageRating(book.getId()));
+        dto.setReviewCount(reviewRepository.getReviewCount(book.getId()));
+    }
+
+    @AfterMapping
+    default void enrichBookDTO(@MappingTarget BookDTO dto, Book book, @Context ReviewRepository reviewRepository) {
+        dto.setAverageRating(reviewRepository.getAverageRating(book.getId()));
+        dto.setReviewCount(reviewRepository.getReviewCount(book.getId()));
+    }
 }

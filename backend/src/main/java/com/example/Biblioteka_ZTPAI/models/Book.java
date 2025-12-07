@@ -1,6 +1,8 @@
 package com.example.Biblioteka_ZTPAI.models;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.Set;
 
 import lombok.*;
@@ -43,4 +45,7 @@ public class Book {
 
     @OneToMany(mappedBy = "book") //cascade = CascadeType.ALL
     private Set<BookCopy> bookCopies;
+
+    @OneToMany(mappedBy = "book")
+    private List<Review> reviews;
 }

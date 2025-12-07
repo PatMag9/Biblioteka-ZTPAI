@@ -3,10 +3,8 @@ package com.example.Biblioteka_ZTPAI.services;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
-import com.example.Biblioteka_ZTPAI.models.Author;
+import com.example.Biblioteka_ZTPAI.models.Review;
 import com.example.Biblioteka_ZTPAI.models.Book;
-import com.example.Biblioteka_ZTPAI.models.BookCopy;
-import com.example.Biblioteka_ZTPAI.models.Publisher;
 import com.example.Biblioteka_ZTPAI.repositories.BookCopyRepository;
 import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
 import com.example.Biblioteka_ZTPAI.specification.BookSpecification;
@@ -69,7 +67,9 @@ public class BookService {
             );
         }
 
-        List<BookListDTO> dtos = bookMapper.toListDTO(books.getContent());
+        List<BookListDTO> dtos = books.stream()
+                .map(book -> enrichBookListDTO(bookMapper.toListDTO(book), book))
+                .toList();
 
         return ResponseEntity.ok(
                 new PageImpl<>(dtos, pageable, books.getTotalElements())
@@ -81,7 +81,7 @@ public class BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
-        BookDTO dto = bookMapper.toDTO(book);
+        BookDTO dto = enrichBookDTO(bookMapper.toDTO(book), book);
 
         return ResponseEntity.ok(dto);
     }
@@ -95,6 +95,28 @@ public class BookService {
         } else {
             throw new NoSuchElementException("Book not found");
         }
+    }
+
+    public BookListDTO enrichBookListDTO(BookListDTO dto, Book book) {
+        Double avgRating = book.getReviews().stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        dto.setAverageRating(avgRating > 0 ? avgRating : null);
+        dto.setReviewCount(book.getReviews().size() > 0 ? book.getReviews().size() : null);
+        return dto;
+    }
+
+    public BookDTO enrichBookDTO(BookDTO dto, Book book) {
+        Double avgRating = book.getReviews().stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        dto.setAverageRating(avgRating > 0 ? avgRating : null);
+        dto.setReviewCount(book.getReviews().size() > 0 ? book.getReviews().size() : null);
+        return dto;
     }
 
 }
