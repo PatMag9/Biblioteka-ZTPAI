@@ -1,6 +1,6 @@
 package com.example.Biblioteka_ZTPAI.repositories;
 
-import com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO;
+import com.example.Biblioteka_ZTPAI.dto.checkout.LoanUserBookDTO;
 import com.example.Biblioteka_ZTPAI.models.Loan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
     @Query("""
-    SELECT new com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO(
-        l.id, l.start_date, l.due_date, l.endDate,
+    SELECT new com.example.Biblioteka_ZTPAI.dto.checkout.LoanUserBookDTO(
+        l.id, l.startDate, l.dueDate, l.endDate,
         u.username,
         b.title
     )
@@ -28,4 +28,7 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
 
     @Query("SELECT l FROM Loan l WHERE l.bookCopy.id = :bookCopyId AND l.endDate IS NULL")
     Optional<Loan> findActiveLoanByBookCopyId(@Param("bookCopyId") Integer bookCopyId);
+
+    @Query("SELECT l FROM Loan l WHERE l.bookCopy.id IN :copyIds AND l.endDate IS NULL")
+    List<Loan> findActiveLoansByBookCopyIds(@Param("copyIds") List<Integer> copyIds);
 }

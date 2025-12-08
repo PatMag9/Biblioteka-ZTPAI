@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -33,8 +34,10 @@ public class BookController {
     }
 
     @GetMapping("/{bookId}")
-    public ResponseEntity<?> getBookById(@PathVariable int bookId) {
-        return bookService.getBookById(bookId);
+    public ResponseEntity<?> getBookById(@PathVariable int bookId,
+                                         @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        return bookService.getBookById(bookId, username);
     }
 
     @DeleteMapping("/{bookId}")

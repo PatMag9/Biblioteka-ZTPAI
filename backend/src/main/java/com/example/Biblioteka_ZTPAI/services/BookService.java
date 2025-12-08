@@ -1,22 +1,21 @@
 package com.example.Biblioteka_ZTPAI.services;
 
+import com.example.Biblioteka_ZTPAI.dto.book.BookCopyDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
+import com.example.Biblioteka_ZTPAI.mappers.BookCopyMapper;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
-import com.example.Biblioteka_ZTPAI.models.Review;
-import com.example.Biblioteka_ZTPAI.models.Book;
-import com.example.Biblioteka_ZTPAI.repositories.BookCopyRepository;
-import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
+import com.example.Biblioteka_ZTPAI.mappers.ReservationMapper;
+import com.example.Biblioteka_ZTPAI.models.*;
+import com.example.Biblioteka_ZTPAI.repositories.*;
 import com.example.Biblioteka_ZTPAI.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +23,11 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
+    private final ReservationRepository reservationRepository;
+    private final LoanRepository loanRepository;
     private final BookMapper bookMapper;
+    private final BookCopyMapper bookCopyMapper;
+    private final ReviewRepository reviewRepository;
 
     private String safe(String s) {
         return (s == null || s.isBlank()) ? null : s.toLowerCase();
@@ -76,12 +79,77 @@ public class BookService {
         );
     }
 
-    public ResponseEntity<Object> getBookById(int bookId) {
-
+    public ResponseEntity<Object> getBookById(int bookId, @Nullable String currentUsername) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
-        BookDTO dto = enrichBookDTO(bookMapper.toDTO(book), book);
+        List<BookCopy> copies = bookCopyRepository.findAllByBookIdWithPublisher(bookId);
+
+        List<BookCopyDTO> copyDTOs = bookCopyMapper.toDTO(copies);
+
+        List<Integer> copyIds = copyDTOs.stream()
+                .map(BookCopyDTO::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        Map<Integer, Reservation> activeReservationMap = new HashMap<>();
+        Map<Integer, Loan> activeLoanMap = new HashMap<>();
+
+        if (!copyIds.isEmpty()) {
+            List<Reservation> activeReservations = reservationRepository.findActiveReservationsByBookCopyIds(copyIds);
+            activeReservations.forEach(r -> {
+                Integer cid = r.getBookCopy().getId();
+                activeReservationMap.putIfAbsent(cid, r);
+            });
+
+            List<Loan> activeLoans = loanRepository.findActiveLoansByBookCopyIds(copyIds);
+            activeLoans.forEach(l -> {
+                Integer cid = l.getBookCopy().getId();
+                activeLoanMap.putIfAbsent(cid, l);
+            });
+        }
+
+        for (BookCopyDTO bcDto : copyDTOs) {
+            Integer cid = bcDto.getId();
+            boolean loaned = activeLoanMap.containsKey(cid);
+            boolean reserved = activeReservationMap.containsKey(cid);
+            boolean reservedByCurrentUser = false;
+
+            if (reserved && currentUsername != null) {
+                Reservation r = activeReservationMap.get(cid);
+                reservedByCurrentUser = r.getUser() != null && currentUsername.equals(r.getUser().getUsername());
+            }
+
+            bcDto.setLoaned(loaned);
+            bcDto.setReserved(reserved);
+            bcDto.setReservedByCurrentUser(reservedByCurrentUser);
+        }
+
+        BookDTO dto = bookMapper.toDTO(book);
+        dto.setCopies(copyDTOs);
+
+        Double avgRating = null;
+        Integer reviewCount = null;
+        try {
+            Double avg = reviewRepository.getAverageRating(bookId);
+            Integer cnt = reviewRepository.getReviewCount(bookId);
+            if (cnt != null && cnt > 0) {
+                avgRating = avg;
+                reviewCount = cnt;
+            }
+        } catch (Exception ignored) {
+            if (book.getReviews() != null && !book.getReviews().isEmpty()) {
+                double avg = book.getReviews().stream().mapToDouble(Review::getRating).average().orElse(0.0);
+                int cnt = book.getReviews().size();
+                if (cnt > 0) {
+                    avgRating = avg;
+                    reviewCount = cnt;
+                }
+            }
+        }
+
+        dto.setAverageRating(avgRating);
+        dto.setReviewCount(reviewCount);
 
         return ResponseEntity.ok(dto);
     }

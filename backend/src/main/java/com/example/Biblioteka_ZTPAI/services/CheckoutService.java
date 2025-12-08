@@ -1,13 +1,17 @@
 package com.example.Biblioteka_ZTPAI.services;
 
 
-import com.example.Biblioteka_ZTPAI.dto.LoanUserBookDTO;
+import com.example.Biblioteka_ZTPAI.dto.checkout.*;
+import com.example.Biblioteka_ZTPAI.mappers.LoanMapper;
+import com.example.Biblioteka_ZTPAI.mappers.ReservationMapper;
+import com.example.Biblioteka_ZTPAI.models.BookCopy;
 import com.example.Biblioteka_ZTPAI.models.Loan;
 import com.example.Biblioteka_ZTPAI.models.Reservation;
 import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.repositories.BookCopyRepository;
 import com.example.Biblioteka_ZTPAI.repositories.LoanRepository;
 import com.example.Biblioteka_ZTPAI.repositories.ReservationRepository;
+import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -24,100 +29,116 @@ public class CheckoutService {
     private final BookCopyRepository bookCopyRepository;
     private final ReservationRepository reservationRepository;
     private final LoanRepository loanRepository;
+    private final UserRepository userRepository;
+    private final LoanMapper loanMapper;
 
-    public ResponseEntity<String> reserveBookCopy(Integer bookCopyId, User user) {
-        return bookCopyRepository.findById(bookCopyId)
-                .map(bookCopy -> {
-                    Reservation reservation = Reservation.builder()
-                            .bookCopy(bookCopy)
-                            .user(user)
-                            .start_date(LocalDateTime.now())
-                            .endDate(null)
-                            .build();
-                    reservationRepository.save(reservation);
-                    return ResponseEntity.ok("Rezerwacja została utworzona.");
-                })
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book copy not found."));
-    }
 
-    public boolean isBookCopyReserved(Integer bookCopyId) {
-        Optional<Reservation> activeReservation = reservationRepository.findActiveReservationByBookCopyId(bookCopyId);
-        return activeReservation.isPresent();
-    }
+    public ResponseEntity<?> reserveBookCopy(CreateReservationDTO dto, String username) {
+        BookCopy bookCopy = bookCopyRepository.findById(dto.getBookCopyId())
+                .orElse(null);
 
-    public boolean isBookCopyLoaned(Integer bookCopyId) {
-        Optional<Loan> activeLoan = loanRepository.findActiveLoanByBookCopyId(bookCopyId);
-        return activeLoan.isPresent();
-    }
-
-    public boolean cancelReservation(Integer bookCopyId, User user) {
-        Optional<Reservation> reservationOpt = reservationRepository
-                .findActiveReservationByBookCopyAndUser(bookCopyId, user.getId());
-
-        if (reservationOpt.isPresent()) {
-            Reservation reservation = reservationOpt.get();
-            reservation.setEndDate(LocalDateTime.now());
-            reservationRepository.save(reservation);
-            return true;
+        if (bookCopy == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Book copy not found.");
         }
 
-        return false;
-    }
-
-    public boolean isReservedByUser(Integer bookCopyId, String username) {
-        Optional<Reservation> activeReservation = reservationRepository.findActiveReservationByBookCopyId(bookCopyId);
-
-        if (activeReservation.isPresent()) {
-            Reservation reservation = activeReservation.get();
-            return reservation.getUser().getUsername().equals(username);
+        if (isBookCopyReserved(bookCopy.getId()) || isBookCopyLoaned(bookCopy.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Book copy is already reserved or borrowed.");
         }
-        return false;
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Reservation reservation = Reservation.builder()
+                .bookCopy(bookCopy)
+                .user(user)
+                .startDate(LocalDateTime.now())
+                .endDate(null)
+                .build();
+
+        reservationRepository.save(reservation);
+
+        return ResponseEntity.ok("Reservation created successfully");
     }
 
-    public ResponseEntity<Object> getActiveReservations() {
-        return ResponseEntity.ok(reservationRepository.findActiveReservationsWithUserAndBook());
+    public ResponseEntity<?> cancelReservation(FinishReservationDTO dto, String username) {
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Optional<Reservation> reservationOpt =
+                reservationRepository.findActiveReservationByBookCopyAndUser(dto.getBookCopyId(), user.getId());
+
+        if (reservationOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Active reservation not found or does not belong to current user.");
+        }
+
+        Reservation reservation = reservationOpt.get();
+
+        reservation.setEndDate(LocalDateTime.now());
+
+        reservationRepository.save(reservation);
+
+        return ResponseEntity.ok("Reservation cancelled successfully.");
     }
 
-    public void completeReservation(Integer reservationId) {
+    public List<ReservationUserBookDTO> getActiveReservations() {
+        return reservationRepository.findActiveReservationsWithUserAndBook();
+    }
+
+    public ResponseEntity<?> completeReservation(Integer reservationId) {
+
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Rezerwacja nie została znaleziona"));
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
         reservation.setEndDate(LocalDateTime.now());
         reservationRepository.save(reservation);
 
-        Loan loan = Loan.builder()
-                .user(reservation.getUser())
-                .bookCopy(reservation.getBookCopy())
-                .start_date(reservation.getStart_date())
-                .due_date(LocalDateTime.now().plusWeeks(2))
-                .endDate(null)
-                .build();
+        CreateLoanDTO dto = new CreateLoanDTO(
+                reservation.getUser().getId(),
+                reservation.getBookCopy().getId(),
+                reservation.getStartDate(),
+                LocalDateTime.now().plusWeeks(2)
+        );
 
+        Loan loan = loanMapper.toEntity(dto);
         loanRepository.save(loan);
+
+        return ResponseEntity.ok("Reservation converted to loan.");
     }
 
     public List<LoanUserBookDTO> getActiveLoans() {
         return loanRepository.findActiveLoansWithUserAndBook();
     }
 
-    public ResponseEntity<Object> returnLoan(Integer loanId) {
-        Optional<Loan> loanOpt = loanRepository.findById(loanId);
+    public ResponseEntity<?> returnLoan(FinishLoanDTO dto) {
+        Optional<Loan> loanOpt = loanRepository.findById(dto.getLoanId());
 
         if (loanOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Wypożyczenie o ID " + loanId + " nie istnieje.");
+                    .body("Loan not found.");
         }
 
         Loan loan = loanOpt.get();
 
         if (loan.getEndDate() != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("To wypożyczenie zostało już zakończone.");
+                    .body("Loan already returned.");
         }
 
-        loan.setEndDate(LocalDateTime.now());
+        loan.setEndDate(dto.getEndDate());
         loanRepository.save(loan);
 
-        return ResponseEntity.ok("Wypożyczenie zakończone pomyślnie.");
+        return ResponseEntity.ok("Loan returned successfully.");
+    }
+
+    public boolean isBookCopyReserved(Integer bookCopyId) {
+        return reservationRepository.findActiveReservationByBookCopyId(bookCopyId).isPresent();
+    }
+
+    public boolean isBookCopyLoaned(Integer bookCopyId) {
+        return loanRepository.findActiveLoanByBookCopyId(bookCopyId).isPresent();
     }
 }

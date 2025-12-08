@@ -1,6 +1,6 @@
 package com.example.Biblioteka_ZTPAI.repositories;
 
-import com.example.Biblioteka_ZTPAI.dto.ReservationUserBookDTO;
+import com.example.Biblioteka_ZTPAI.dto.checkout.ReservationUserBookDTO;
 import com.example.Biblioteka_ZTPAI.models.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,8 +19,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                                                                  @Param("userId") Integer userId);
 
     @Query("""
-    SELECT new com.example.Biblioteka_ZTPAI.dto.ReservationUserBookDTO(
-        r.id, r.start_date, r.endDate,
+    SELECT new com.example.Biblioteka_ZTPAI.dto.checkout.ReservationUserBookDTO(
+        r.id, r.startDate, r.endDate,
         u.username,
         b.title
     )
@@ -31,4 +31,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     WHERE r.endDate IS NULL
     """)
     List<ReservationUserBookDTO> findActiveReservationsWithUserAndBook();
+
+    @Query("SELECT r FROM Reservation r WHERE r.bookCopy.id IN :copyIds AND (r.endDate IS NULL OR r.endDate > CURRENT_TIMESTAMP)")
+    List<Reservation> findActiveReservationsByBookCopyIds(@Param("copyIds") List<Integer> copyIds);
+
 }
