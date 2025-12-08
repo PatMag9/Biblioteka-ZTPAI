@@ -10,4 +10,7 @@ public class BookCopyDTO {
     private String isbn;
     private PublisherDTO publisher;
     private Integer yearPublished;
+    private boolean reserved;
+    private boolean reservedByCurrentUser;
+    private boolean loaned;
 }

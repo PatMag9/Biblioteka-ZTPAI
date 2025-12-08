@@ -29,16 +29,4 @@ public interface BookMapper {
     @Mapping(source = "authors", target = "authors")
     @Mapping(source = "bookCopies", target = "copies")
     BookDTO toDTO(Book book);
-
-    @AfterMapping
-    default void enrichBookListDTO(@MappingTarget BookListDTO dto, Book book, @Context ReviewRepository reviewRepository) {
-        dto.setAverageRating(reviewRepository.getAverageRating(book.getId()));
-        dto.setReviewCount(reviewRepository.getReviewCount(book.getId()));
-    }
-
-    @AfterMapping
-    default void enrichBookDTO(@MappingTarget BookDTO dto, Book book, @Context ReviewRepository reviewRepository) {
-        dto.setAverageRating(reviewRepository.getAverageRating(book.getId()));
-        dto.setReviewCount(reviewRepository.getReviewCount(book.getId()));
-    }
 }
