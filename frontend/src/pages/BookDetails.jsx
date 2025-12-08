@@ -45,7 +45,6 @@ function BookDetails() {
         setToken(tokenFromStorage);
     }, [navigate]);
 
-    // Pobranie danych książki
     useEffect(() => {
         if (!token) return;
 
@@ -53,16 +52,6 @@ function BookDetails() {
             .then(res => res.json())
             .then(data => setBook(data))
             .catch(err => console.error("Błąd:", err));
-    }, [id, token]);
-
-    // Pobranie recenzji książki
-    useEffect(() => {
-        if (!token) return;
-
-        fetch(`${API_URL}/${id}/reviews`, { headers: { Authorization: `Bearer ${token}` } })
-            .then(res => res.json())
-            .then(data => setReviews(data))
-            .catch(err => console.error("Błąd pobierania recenzji:", err));
     }, [id, token]);
 
     useEffect(() => {
@@ -75,9 +64,12 @@ function BookDetails() {
             .then(data => {
                 setReviews(data);
 
-                const currentUser = JSON.parse(atob(token.split(".")[1])).sub;
-                const hasReview = data.some(r => r.username === currentUser);
-                setUserHasReview(hasReview);
+                try {
+                    const currentUser = JSON.parse(atob(token.split(".")[1])).sub;
+                    setUserHasReview(data.some(r => r.username === currentUser));
+                } catch {
+                    setUserHasReview(false);
+                }
             })
             .catch(err => console.error("Błąd pobierania recenzji:", err));
     }, [id, token]);
@@ -96,71 +88,51 @@ function BookDetails() {
             </>
         );
     };
-    useEffect(() => {
-        if (!token || !book?.copies) return;
-
-        book.copies.forEach(copy => {
-            fetch(`http://localhost:8080/api/v1/checkout/bookCopyStatus/${copy.id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(res => res.json())
-                .then(status => {
-                    setCopyStatuses(prev => ({
-                        ...prev,
-                        [copy.id]: status
-                    }));
-                })
-                .catch(() => {
-                    setCopyStatuses(prev => ({
-                        ...prev,
-                        [copy.id]: {
-                            reserved: false,
-                            reservedByCurrentUser: false,
-                            loaned: false,
-                        }
-                    }));
-                });
-        });
-    }, [book, token]);
-
-    const refreshCopyStatus = (copyId) => {
-        fetch(`http://localhost:8080/api/v1/checkout/bookCopyStatus/${copyId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(res => res.json())
-            .then(data => {
-                setCopyStatuses(prev => ({
-                    ...prev,
-                    [copyId]: data
-                }));
-            });
-    };
 
     const handleReserve = (copyId) => {
-        fetch(`http://localhost:8080/api/v1/checkout/reserve/${copyId}`, {
+        fetch(`http://localhost:8080/api/v1/checkout/reserve`, {
             method: "POST",
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ bookCopyId: copyId })
         })
             .then(res => {
-                if (!res.ok) return alert("Błąd podczas rezerwacji.");
+                if (!res.ok) return res.text().then(t => alert("Błąd: " + t));
                 alert("Rezerwacja została utworzona!");
-                refreshCopyStatus(copyId);
+                setBook(prev => {
+                    const updatedCopies = prev.copies.map(c => c.id === copyId
+                        ? { ...c, reserved: true, reservedByCurrentUser: true }
+                        : c
+                    );
+                    return { ...prev, copies: updatedCopies };
+                });
             });
     };
 
     const handleCancelReservation = (copyId) => {
-        fetch(`http://localhost:8080/api/v1/checkout/cancelReservation/${copyId}`, {
+        fetch(`http://localhost:8080/api/v1/checkout/cancelReservation`, {
             method: "PUT",
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ bookCopyId: copyId })
         })
             .then(res => {
-                if (!res.ok) return alert("Błąd podczas anulowania rezerwacji.");
+                if (!res.ok) return res.text().then(t => alert("Błąd: " + t));
                 alert("Rezerwacja została anulowana.");
-                refreshCopyStatus(copyId);
+                setBook(prev => {
+                    const updatedCopies = prev.copies.map(c => c.id === copyId
+                        ? { ...c, reserved: false, reservedByCurrentUser: false }
+                        : c
+                    );
+                    return { ...prev, copies: updatedCopies };
+                });
             });
     };
 
-    //dodawanie recenzji
     const handleAddReview = () => {
         fetch(`${API_URL}/${id}/reviews`, {
             method: "POST",
@@ -249,10 +221,9 @@ function BookDetails() {
                                     </thead>
                                     <tbody>
                                     {book.copies.map(copy => {
-                                        const status = copyStatuses[copy.id] || {};
-                                        const isLoaned = status.loaned;
-                                        const isReserved = status.reserved;
-                                        const reservedByUser = status.reservedByCurrentUser;
+                                        const isLoaned = copy.loaned;
+                                        const isReserved = copy.reserved;
+                                        const reservedByUser = copy.reservedByCurrentUser;
 
                                         let button = null;
                                         if (isLoaned) button = null;
