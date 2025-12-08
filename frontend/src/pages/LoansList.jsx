@@ -76,11 +76,16 @@ function LoansList() {
     const handleReturnLoan = (loanId) => {
         if (!window.confirm("Czy na pewno chcesz oznaczyć wypożyczenie jako zwrócone?")) return;
 
-        fetch(`http://localhost:8080/api/v1/checkout/loans/${loanId}/return`, {
+        fetch("http://localhost:8080/api/v1/checkout/loans/return", {
             method: "PUT",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
             },
+            body: JSON.stringify({
+                loanId: loanId,
+                endDate: new Date().toISOString()
+            })
         })
             .then((res) => {
                 if (!res.ok) throw new Error("Nie udało się zwrócić książki");
@@ -122,8 +127,8 @@ function LoansList() {
                             <div className="admin-book-list-row">Brak aktywnych wypożyczeń.</div>
                         ) : (
                             loans.map((loan) => (
-                                <div className="admin-book-card" key={loan.idLoan}>
-                                    <div className="admin-book-card-element">{loan.idLoan}</div>
+                                <div className="admin-book-card" key={loan.id}>
+                                    <div className="admin-book-card-element">{loan.id}</div>
                                     <div className="admin-book-card-element">
                                         {loan.username || "Brak danych"}
                                     </div>
@@ -139,7 +144,7 @@ function LoansList() {
                                             : "-"}
                                     </div>
                                     <div className="admin-book-card-element">
-                                        <button onClick={() => handleReturnLoan(loan.idLoan)}>
+                                        <button onClick={() => handleReturnLoan(loan.id)}>
                                             Zwróć książkę
                                         </button>
                                     </div>

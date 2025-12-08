@@ -129,10 +129,10 @@ function ReservationsList() {
                         {reservations.map((reservation) => (
                             <div
                                 className="admin-book-card"
-                                key={reservation.idReservation}
+                                key={reservation.id}
                             >
                                 <div className="admin-book-card-element"  style={{ flex: 3 }}>
-                                    {reservation.idReservation}
+                                    {reservation.id}
                                 </div>
                                 <div className="admin-book-card-element"  style={{ flex: 3 }}>
                                     {reservation.username || "Brak danych"}
@@ -146,7 +146,7 @@ function ReservationsList() {
                                 <div className="admin-book-card-element" style={{ flex: 1 }}>
                                     <button
                                         onClick={() =>
-                                            handleCompleteReservation(reservation.idReservation)
+                                            handleCompleteReservation(reservation.id)
                                         }
                                     >
                                         Przekształć w wypożyczenie
