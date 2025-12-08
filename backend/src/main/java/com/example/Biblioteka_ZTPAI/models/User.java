@@ -46,11 +46,9 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
     private Set<Reservation> reservations;
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
     private Set<Loan> loans;
 
     public User(String username, String email, String password) {

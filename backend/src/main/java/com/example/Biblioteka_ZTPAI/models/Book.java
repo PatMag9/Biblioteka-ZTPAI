@@ -43,7 +43,7 @@ public class Book {
     )
     private Set<Author> authors;
 
-    @OneToMany(mappedBy = "book") //cascade = CascadeType.ALL
+    @OneToMany(mappedBy = "book")
     private Set<BookCopy> bookCopies;
 
     @OneToMany(mappedBy = "book")

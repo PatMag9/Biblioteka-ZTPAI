@@ -1,6 +1,5 @@
 package com.example.Biblioteka_ZTPAI.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,19 +22,17 @@ public class Loan {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonManagedReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "book_copy_id", nullable = false)
-    @JsonManagedReference
     private BookCopy bookCopy;
 
     @Column(name = "start_date")
-    private LocalDateTime start_date;
+    private LocalDateTime startDate;
 
     @Column(name = "due_date")
-    private LocalDateTime due_date;
+    private LocalDateTime dueDate;
 
     @Column(name = "end_date")
     private LocalDateTime endDate;

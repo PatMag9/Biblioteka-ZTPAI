@@ -16,9 +16,6 @@ import java.util.Set;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecificationExecutor<Book> {
 
-    @Query("SELECT b.authors FROM Book b WHERE b.id = :bookId")
-    Set<Author> findAuthorsByBookId(Integer bookId);
-
     @Query("""
 SELECT b FROM Book b
 LEFT JOIN b.authors a

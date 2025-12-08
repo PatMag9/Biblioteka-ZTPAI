@@ -26,6 +26,5 @@ public class Publisher {
     private String name;
 
     @OneToMany(mappedBy = "publisher")
-    @JsonManagedReference
     private Set<BookCopy> bookCopies;
 }
