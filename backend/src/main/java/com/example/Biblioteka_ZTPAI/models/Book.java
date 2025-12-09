@@ -2,6 +2,7 @@ package com.example.Biblioteka_ZTPAI.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -48,4 +49,7 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     private List<Review> reviews;
+
+    @Column(name = "date_added")
+    private LocalDateTime dateAdded;
 }

@@ -5,17 +5,19 @@ import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.mappers.BookCopyMapper;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
-import com.example.Biblioteka_ZTPAI.mappers.ReservationMapper;
 import com.example.Biblioteka_ZTPAI.models.*;
 import com.example.Biblioteka_ZTPAI.repositories.*;
-import com.example.Biblioteka_ZTPAI.specification.BookSpecification;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -33,50 +35,106 @@ public class BookService {
         return (s == null || s.isBlank()) ? null : s.toLowerCase();
     }
 
-    public ResponseEntity<Object> getBooks(
-            String search,
-            String genre,
-            String author,
+    public Page<BookListDTO> getBooks(
             String sort,
-            String order,
+            Integer authorId,
+            Integer genreId,
+            String search,
             int page,
             int size
     ) {
-
-        Page<Book> books;
-
-        boolean sortByAuthor = "authors".equalsIgnoreCase(sort);
-
         Pageable pageable;
 
-        if (sortByAuthor) {
+        if ("popular".equalsIgnoreCase(sort)) {
             pageable = PageRequest.of(page, size);
+        } else {
+            Sort sortObj;
+            if ("newest".equalsIgnoreCase(sort)) {
+                sortObj = Sort.by("dateAdded");
+                sortObj = sortObj.descending();
+            } else {
+                sortObj = Sort.by("title");
+                sortObj = sortObj.ascending();
+            }
 
-            books = bookRepository.findAllSortedByAuthorName(
-                    safe(search),
-                    safe(genre),
-                    safe(author),
+            pageable = PageRequest.of(page, size, sortObj);
+        }
+
+        Page<Book> pageResult;
+
+        boolean hasSearch = search != null && !search.isBlank();
+
+        if ("popular".equalsIgnoreCase(sort)) {
+            pageResult = bookRepository.findAllOrderByReviewCountDesc(
+                    hasSearch ? search : null,
+                    genreId,
+                    authorId,
                     pageable
             );
         } else {
-            Sort.Direction direction =
-                    order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Specification<Book> spec = Specification.where(null);
 
-            pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+            if (authorId != null) {
+                spec = spec.and((root, query, cb) -> {
+                    query.distinct(true);
+                    Join<Book, Author> authorJoin = root.join("authors", JoinType.INNER);
+                    return cb.equal(authorJoin.get("id"), authorId);
+                });
+            }
 
-            books = bookRepository.findAll(
-                    BookSpecification.filterBooks(search, genre, author),
-                    pageable
-            );
+            if (genreId != null) {
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("genre").get("id"), genreId)
+                );
+            }
+
+            if (hasSearch) {
+                String like = "%" + search.toLowerCase() + "%";
+                spec = spec.and((root, query, cb) ->
+                        cb.like(cb.lower(root.get("title")), like)
+                );
+            }
+
+            pageResult = bookRepository.findAll(spec, pageable);
         }
 
-        List<BookListDTO> dtos = books.stream()
-                .map(book -> enrichBookListDTO(bookMapper.toListDTO(book), book))
-                .toList();
+        List<Book> books = pageResult.getContent();
+        List<BookListDTO> dtoList = bookMapper.toListDTO(books);
 
-        return ResponseEntity.ok(
-                new PageImpl<>(dtos, pageable, books.getTotalElements())
+        List<Integer> bookIds = books.stream().map(Book::getId).collect(Collectors.toList());
+        Map<Integer, ReviewStats> statsMap = new HashMap<>();
+        if (!bookIds.isEmpty()) {
+            List<Object[]> stats = bookRepository.findReviewStatsByBookIds(bookIds);
+            for (Object[] row : stats) {
+                Integer bId = ((Number)row[0]).intValue();
+                Integer cnt = ((Number)row[1]).intValue();
+                Double avg = row[2] == null ? null : ((Number)row[2]).doubleValue();
+                statsMap.put(bId, new ReviewStats(cnt, avg));
+            }
+        }
+
+        for (BookListDTO dto : dtoList) {
+            ReviewStats st = statsMap.get(dto.getId());
+            if (st != null) {
+                dto.setReviewCount(st.count);
+                dto.setAverageRating(st.average);
+            } else {
+                dto.setReviewCount(0);
+                dto.setAverageRating(null);
+            }
+        }
+
+        return new PageImpl<>(
+                dtoList,
+                pageResult.getPageable(),
+                pageResult.getTotalElements()
         );
+    }
+
+    private static class ReviewStats {
+        final int count;
+        final Double average;
+        ReviewStats(int c, Double a) { count = c; average = a; }
     }
 
     public ResponseEntity<Object> getBookById(int bookId, @Nullable String currentUsername) {
@@ -163,28 +221,6 @@ public class BookService {
         } else {
             throw new NoSuchElementException("Book not found");
         }
-    }
-
-    public BookListDTO enrichBookListDTO(BookListDTO dto, Book book) {
-        Double avgRating = book.getReviews().stream()
-                .mapToDouble(Review::getRating)
-                .average()
-                .orElse(0.0);
-
-        dto.setAverageRating(avgRating > 0 ? avgRating : null);
-        dto.setReviewCount(book.getReviews().size() > 0 ? book.getReviews().size() : null);
-        return dto;
-    }
-
-    public BookDTO enrichBookDTO(BookDTO dto, Book book) {
-        Double avgRating = book.getReviews().stream()
-                .mapToDouble(Review::getRating)
-                .average()
-                .orElse(0.0);
-
-        dto.setAverageRating(avgRating > 0 ? avgRating : null);
-        dto.setReviewCount(book.getReviews().size() > 0 ? book.getReviews().size() : null);
-        return dto;
     }
 
 }

@@ -22,15 +22,16 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<?> getBooks(
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Integer authorId,
+            @RequestParam(required = false) Integer genreId,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false, defaultValue = "title") String sort,
-            @RequestParam(required = false, defaultValue = "asc") String order,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
     ) {
-        return bookService.getBooks(search, genre, author, sort, order, page, size);
+        return ResponseEntity.ok(
+                bookService.getBooks(sort, authorId, genreId, search, page, size)
+        );
     }
 
     @GetMapping("/{bookId}")
