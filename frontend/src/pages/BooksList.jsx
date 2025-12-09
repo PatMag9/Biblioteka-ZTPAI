@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/BookPages.css";
 import BookPageHeader from "../components/BookPageHeader.jsx";
 import BookPageCategories from "../components/BookPageCategories.jsx";
@@ -13,7 +13,13 @@ function BooksList() {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const PAGE_SIZE = 3;
+    const PAGE_SIZE = 1;
+    const [sort, setSort] = useState(null);            // "newest" | "popular" | "alphabetical" | null
+    const [authorId, setAuthorId] = useState(null);
+    const [genreId, setGenreId] = useState(null);
+    const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const location = useLocation();
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -38,23 +44,21 @@ function BooksList() {
             navigate("/");
             return;
         }
-
-        fetchBooks();
     }, [navigate]);
 
-    const fetchBooks = (params = {}) => {
+    const fetchBooks = () => {
         const token = localStorage.getItem("jwtToken");
 
         const query = new URLSearchParams({
-            sort: params.sort || "title",
-            order: params.order || "asc",
-            page: params.page ?? currentPage,
+            page: currentPage,
             size: PAGE_SIZE,
-            search: params.search || "",
-            genre: params.genre || "",
-            authors: params.author || "",
+            sort: sort ?? "",
+            authorId: authorId ?? "",
+            genreId: genreId ?? "",
+            search: searchQuery ?? ""
         }).toString();
 
+        setIsLoading(true);
         fetch(`${API_URL}?${query}`, {
             headers: { "Authorization": `Bearer ${token}` },
         })
@@ -68,15 +72,40 @@ function BooksList() {
             .catch(error => console.error("Błąd:", error));
     };
 
-    const handleCategoryClick = (sortField) => {
-        setIsLoading(true);
-        fetchBooks({ sort: sortField, order: "asc" });
+    const handleCategoryClick = (selectedSort) => {
+        setSort(selectedSort);
+        setCurrentPage(0);
     };
 
     const handlePageChange = (pageNumber) => {
-        setIsLoading(true);
-        fetchBooks({ page: pageNumber });
+        setCurrentPage(pageNumber);
     };
+
+    const handleSearch = (text) => {
+        setSearchQuery(text);
+        setCurrentPage(0);
+    };
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+
+        const author = params.get("authorId");
+        const genre = params.get("genreId");
+
+        setAuthorId(author || null);
+        setGenreId(genre || null);
+
+        setSort(null);
+        setCurrentPage(0);
+
+        setFiltersInitialized(true);
+    }, [location.search]);
+
+    useEffect(() => {
+        if (!filtersInitialized) return;
+        fetchBooks();
+    }, [sort, authorId, genreId, searchQuery, currentPage, filtersInitialized]);
+
 
     const renderStars = (averageRating) => {
         const fullStars = Math.floor(averageRating || 0);
@@ -95,7 +124,7 @@ function BooksList() {
 
     return (
         <div className="container">
-            <BookPageHeader />
+            <BookPageHeader onSearch={handleSearch}/>
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
                 <BookPageCategories onSortChange={handleCategoryClick} />

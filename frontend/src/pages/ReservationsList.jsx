@@ -111,7 +111,7 @@ function ReservationsList() {
 
     return (
         <>
-            <BookPageHeader headerLink="/admin" />
+            <BookPageHeader/>
             <div className="admin-container">
                 <h1>Rezerwacje</h1>
                 <div className="admin-book-list">

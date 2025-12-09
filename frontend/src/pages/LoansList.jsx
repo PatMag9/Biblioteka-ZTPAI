@@ -110,7 +110,7 @@ function LoansList() {
 
     return (
         <>
-            <BookPageHeader headerLink="/admin" />
+            <BookPageHeader/>
             <div className="admin-container">
                 <h1>Wypożyczenia</h1>
                 <div className="admin-book-list">

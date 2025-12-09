@@ -162,7 +162,7 @@ function BookAdminList() {
 
     return (
         <>
-            <BookPageHeader headerLink="/admin" />
+            <BookPageHeader/>
             <div className="admin-container">
                 <h1>Książki</h1>
                 <div className="admin-book-list">

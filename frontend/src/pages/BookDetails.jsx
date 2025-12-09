@@ -173,8 +173,6 @@ function BookDetails() {
             <BookPageHeader />
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
-                <BookPageCategories />
-
                 <section className="book-list">
                     <div className="book-page">
                         <div className="book-info">
