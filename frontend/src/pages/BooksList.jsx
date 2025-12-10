@@ -13,7 +13,7 @@ function BooksList() {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const PAGE_SIZE = 1;
+    const PAGE_SIZE = 3;
     const [sort, setSort] = useState(null);            // "newest" | "popular" | "alphabetical" | null
     const [authorId, setAuthorId] = useState(null);
     const [genreId, setGenreId] = useState(null);
