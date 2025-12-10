@@ -3,19 +3,12 @@ package com.example.Biblioteka_ZTPAI.controllers;
 import com.example.Biblioteka_ZTPAI.dto.checkout.CreateReservationDTO;
 import com.example.Biblioteka_ZTPAI.dto.checkout.FinishLoanDTO;
 import com.example.Biblioteka_ZTPAI.dto.checkout.FinishReservationDTO;
-import com.example.Biblioteka_ZTPAI.dto.checkout.LoanUserBookDTO;
-import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.services.CheckoutService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController

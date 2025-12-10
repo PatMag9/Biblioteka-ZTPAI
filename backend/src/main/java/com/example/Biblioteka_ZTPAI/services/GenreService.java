@@ -2,15 +2,12 @@ package com.example.Biblioteka_ZTPAI.services;
 
 import com.example.Biblioteka_ZTPAI.models.Genre;
 import com.example.Biblioteka_ZTPAI.repositories.GenreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class GenreService {
-    @Autowired
-    private GenreRepository genreRepository;
+    private final GenreRepository genreRepository;
 
     public List<Genre> getGenres() {
         return genreRepository.findAll();

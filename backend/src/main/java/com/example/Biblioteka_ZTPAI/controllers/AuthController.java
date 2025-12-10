@@ -4,22 +4,18 @@ import com.example.Biblioteka_ZTPAI.models.AuthenticationResponse;
 import com.example.Biblioteka_ZTPAI.models.LoginRequest;
 import com.example.Biblioteka_ZTPAI.models.RegisterRequest;
 import com.example.Biblioteka_ZTPAI.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
-
-    @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(

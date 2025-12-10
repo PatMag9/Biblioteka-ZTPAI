@@ -1,9 +1,7 @@
 package com.example.Biblioteka_ZTPAI.services;
 
-
 import com.example.Biblioteka_ZTPAI.dto.checkout.*;
 import com.example.Biblioteka_ZTPAI.mappers.LoanMapper;
-import com.example.Biblioteka_ZTPAI.mappers.ReservationMapper;
 import com.example.Biblioteka_ZTPAI.models.BookCopy;
 import com.example.Biblioteka_ZTPAI.models.Loan;
 import com.example.Biblioteka_ZTPAI.models.Reservation;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor

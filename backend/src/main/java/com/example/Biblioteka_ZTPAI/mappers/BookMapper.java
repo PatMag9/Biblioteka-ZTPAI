@@ -3,7 +3,6 @@ package com.example.Biblioteka_ZTPAI.mappers;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.models.Book;
-import com.example.Biblioteka_ZTPAI.repositories.ReviewRepository;
 import org.mapstruct.*;
 
 import java.util.List;
