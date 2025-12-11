@@ -236,7 +236,6 @@ public class BookService {
         Page<MyBookProjection> pageResult =
                 bookRepository.findUserLoansAndReservations(userId, pageable);
 
-        // mapowanie na DTO
         List<MyBookDTO> dtoList = pageResult.getContent().stream()
                 .map(myBookMapper::toDTO)
                 .toList();

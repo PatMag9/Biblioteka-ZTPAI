@@ -65,6 +65,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
 
     @Query(value =
             "SELECT " +
+                    "   l.id AS itemId, " +
                     "   b.id AS bookId, " +
                     "   bc.id AS bookCopyId, " +
                     "   b.cover AS cover, " +
@@ -82,6 +83,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
                     "UNION ALL " +
 
                     "SELECT " +
+                    "   r.id AS itemId, " +
                     "   b.id AS bookId, " +
                     "   bc.id AS bookCopyId, " +
                     "   b.cover AS cover, " +

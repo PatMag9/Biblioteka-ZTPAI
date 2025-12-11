@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class MyBookDTO {
+    private Integer itemId;
     private Integer bookId;
     private Integer bookCopyId;
     private String cover;

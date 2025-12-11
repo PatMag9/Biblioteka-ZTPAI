@@ -3,6 +3,7 @@ package com.example.Biblioteka_ZTPAI.projections;
 import java.time.LocalDateTime;
 
 public interface MyBookProjection {
+    Integer getItemId();
     Integer getBookId();
     Integer getBookCopyId();
     String getCover();
