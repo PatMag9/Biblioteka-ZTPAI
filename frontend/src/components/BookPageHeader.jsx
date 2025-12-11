@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function BookPageHeader({ onSearch }) {
+function BookPageHeader({ onSearch, searchRedirectPath }) {
     const navigate = useNavigate();
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -34,7 +34,16 @@ function BookPageHeader({ onSearch }) {
         window.location.reload();
     };
 
-    // Klik poza menu -> zamknij menu
+    const handleSearchClick = () => {
+        const queryText = document.querySelector('input[name="search-input"]').value;
+
+        if (onSearch) {
+            onSearch(queryText);            // normalne wyszukiwanie w BookList
+        } else if (searchRedirectPath) {
+            navigate(`${searchRedirectPath}?search=${queryText}`);   // przeniesienie na BookList
+        }
+    };
+
     useEffect(() => {
         function handleClickOutside(event) {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -55,16 +64,10 @@ function BookPageHeader({ onSearch }) {
             <div className="header-right-side">
                 <input name="search-input" placeholder="Wyszukaj..." />
 
-                <button
-                    className="search-button"
-                    onClick={() =>
-                        onSearch(document.querySelector('input[name="search-input"]').value)
-                    }
-                >
-                    <img src={searchIcon} />
+                <button className="search-button" onClick={handleSearchClick}>
+                    <img src={searchIcon}/>
                 </button>
 
-                {/* USER MENU */}
                 <div className="user-component" ref={menuRef}>
                     <button
                         id="user-button"

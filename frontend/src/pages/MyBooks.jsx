@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Bookpages.css";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 const API_URL = "http://localhost:8080/api/v1/books";
 const API_URL2 = "http://localhost:8080/api/v1/checkout";
@@ -75,76 +76,82 @@ export default function MyBooks() {
 
 
     return (
-        <div className="mybooks-container">
+        <div className="container">
+            <BookPageHeader
+                mode="other"
+                searchRedirectPath="/books"
+            />
+            <div className="mybooks-container">
 
-            <h2>Moje książki</h2>
+                <h2>Moje książki</h2>
 
-            {isLoading ? (
-                <p>Ładowanie...</p>
-            ) : (
-                <table className="mybooks-table">
-                    <thead>
-                    <tr>
-                        <th>Okładka</th>
-                        <th>Tytuł</th>
-                        <th>Typ</th>
-                        <th>Termin</th>
-                        <th>Akcja</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {items.map((item) => (
-                        <tr key={item.itemId}>
-                            <td className="cover-cell">
-                                <Link to={`/book/${item.bookId}`}>
-                                    <img
-                                        src={`/uploads/${item.cover}`}
-                                        alt="cover"
-                                        className="mybooks-cover"
-                                    />
-                                </Link>
-                            </td>
-
-                            <td>
-                                <Link className="title-link" to={`/book/${item.bookId}`}>
-                                    {item.title}
-                                </Link>
-                            </td>
-
-                            <td>
-                                {item.type === "loan" ? "Wypożyczenie" : "Rezerwacja"}
-                            </td>
-
-                            <td>{formatDate(item.dueDate)}</td>
-
-                            <td>
-                                {item.type === "loan" ? (
-                                    item.canExtend ? (
-                                        <button
-                                            className="action-btn extend-btn"
-                                            onClick={() => extendLoan(item.itemId)}
-                                        >
-                                            Przedłuż termin
-                                        </button>
-                                    ) : (
-                                        <span className="extend-disabled">Nie można przedłużyć</span>
-                                    )
-                                ) : (
-                                    <button
-                                        className="action-btn cancel-btn"
-                                        onClick={() => cancelReservation(item.itemId)}
-                                    >
-                                        Anuluj
-                                    </button>
-                                )}
-                            </td>
-
+                {isLoading ? (
+                    <p>Ładowanie...</p>
+                ) : (
+                    <table className="mybooks-table">
+                        <thead>
+                        <tr>
+                            <th>Okładka</th>
+                            <th>Tytuł</th>
+                            <th>Typ</th>
+                            <th>Termin</th>
+                            <th>Akcja</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
-            )}
+                        </thead>
+
+                        <tbody>
+                        {items.map((item) => (
+                            <tr key={item.itemId}>
+                                <td className="cover-cell">
+                                    <Link to={`/book/${item.bookId}`}>
+                                        <img
+                                            src={`/uploads/${item.cover}`}
+                                            alt="cover"
+                                            className="mybooks-cover"
+                                        />
+                                    </Link>
+                                </td>
+
+                                <td>
+                                    <Link className="title-link" to={`/book/${item.bookId}`}>
+                                        {item.title}
+                                    </Link>
+                                </td>
+
+                                <td>
+                                    {item.type === "loan" ? "Wypożyczenie" : "Rezerwacja"}
+                                </td>
+
+                                <td>{formatDate(item.dueDate)}</td>
+
+                                <td>
+                                    {item.type === "loan" ? (
+                                        item.canExtend ? (
+                                            <button
+                                                className="action-btn extend-btn"
+                                                onClick={() => extendLoan(item.itemId)}
+                                            >
+                                                Przedłuż termin
+                                            </button>
+                                        ) : (
+                                            <span className="extend-disabled">Nie można przedłużyć</span>
+                                        )
+                                    ) : (
+                                        <button
+                                            className="action-btn cancel-btn"
+                                            onClick={() => cancelReservation(item.itemId)}
+                                        >
+                                            Anuluj
+                                        </button>
+                                    )}
+                                </td>
+
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
         </div>
     );
 }

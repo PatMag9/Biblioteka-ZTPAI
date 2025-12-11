@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
+import BookPageHeader from "../components/BookPageHeader.jsx";
 
 const API_URL = "http://localhost:8080/api/v1/genres";
 
@@ -71,62 +72,68 @@ const GenresList = () => {
     };
 
     return (
-        <main>
-            <h2>Gatunki</h2>
+        <div className="container">
+            <BookPageHeader
+                mode="other"
+                searchRedirectPath="/books"
+            />
+            <main>
+                <h2>Gatunki</h2>
 
-            <div className="list-search-bar">
-                <input
-                    type="text"
-                    placeholder="Wyszukaj gatunek..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <button onClick={handleSearch}>Szukaj</button>
-            </div>
+                <div className="list-search-bar">
+                    <input
+                        type="text"
+                        placeholder="Wyszukaj gatunek..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <button onClick={handleSearch}>Szukaj</button>
+                </div>
 
-            <div className="entity-list">
-                {genres.map(genre => (
-                    <div
-                        key={genre.id}
-                        className="entity-card"
-                        onClick={() => handleGenreClick(genre.id)}
-                        style={{ cursor: "pointer" }}
-                    >
-                        <div className="entity-main">
-                            <span className="entity-title">{genre.name}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="page-nav">
-                <button
-                    className="prev-page"
-                    disabled={page === 0}
-                    onClick={() => setPage(prev => prev - 1)}
-                >
-                    {"<"}
-                </button>
-                <div className="page-numbers">
-                    {[...Array(totalPages)].map((_, i) => (
-                        <button
-                            key={i}
-                            page-active={page === i ? "true" : "false"}
-                            onClick={() => setPage(i)}
+                <div className="entity-list">
+                    {genres.map(genre => (
+                        <div
+                            key={genre.id}
+                            className="entity-card"
+                            onClick={() => handleGenreClick(genre.id)}
+                            style={{cursor: "pointer"}}
                         >
-                            {i + 1}
-                        </button>
+                            <div className="entity-main">
+                                <span className="entity-title">{genre.name}</span>
+                            </div>
+                        </div>
                     ))}
                 </div>
-                <button
-                    className="next-page"
-                    disabled={page === totalPages - 1}
-                    onClick={() => setPage(prev => prev + 1)}
-                >
-                    {">"}
-                </button>
-            </div>
-        </main>
+
+                <div className="page-nav">
+                    <button
+                        className="prev-page"
+                        disabled={page === 0}
+                        onClick={() => setPage(prev => prev - 1)}
+                    >
+                        {"<"}
+                    </button>
+                    <div className="page-numbers">
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i}
+                                page-active={page === i ? "true" : "false"}
+                                onClick={() => setPage(i)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        className="next-page"
+                        disabled={page === totalPages - 1}
+                        onClick={() => setPage(prev => prev + 1)}
+                    >
+                        {">"}
+                    </button>
+                </div>
+            </main>
+        </div>
     );
 };
 

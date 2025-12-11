@@ -170,7 +170,10 @@ function BookDetails() {
 
     return (
         <div className="container">
-            <BookPageHeader />
+            <BookPageHeader
+                mode="other"
+                searchRedirectPath="/books"
+            />
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
                 <section className="book-list">

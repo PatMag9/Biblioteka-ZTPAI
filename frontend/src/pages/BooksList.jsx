@@ -91,9 +91,11 @@ function BooksList() {
 
         const author = params.get("authorId");
         const genre = params.get("genreId");
+        const search = params.get("search");
 
         setAuthorId(author || null);
         setGenreId(genre || null);
+        setSearchQuery(search || null);
 
         setSort(null);
         setCurrentPage(0);
@@ -124,7 +126,10 @@ function BooksList() {
 
     return (
         <div className="container">
-            <BookPageHeader onSearch={handleSearch}/>
+            <BookPageHeader
+                mode="books"
+                onSearch={handleSearch}
+            />
             <main>
                 <h2>Katalog Biblioteki BiblioSolis</h2>
                 <BookPageCategories onSortChange={handleCategoryClick} />
