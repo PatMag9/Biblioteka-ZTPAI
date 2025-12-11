@@ -56,6 +56,7 @@ public class CheckoutService {
                 .user(user)
                 .startDate(LocalDateTime.now())
                 .endDate(null)
+                .expirationDate(LocalDateTime.now().plusDays(3))
                 .build();
 
         reservationRepository.save(reservation);

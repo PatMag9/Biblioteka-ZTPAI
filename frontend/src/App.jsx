@@ -11,6 +11,7 @@ import ReservationsList from "./pages/ReservationsList.jsx";
 import LoansList from "./pages/LoansList.jsx";
 import AuthorsList from "./pages/AuthorsList.jsx";
 import GenresList from "./pages/GenresList.jsx";
+import MyBooks from "./pages/MyBooks.jsx";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/admin/loans" element={<LoansList />} />
                 <Route path="/authors" element={<AuthorsList />} />
                 <Route path="/genres" element={<GenresList />} />
+                <Route path="/mybooks" element={<MyBooks />} />
             </Routes>
         </Router>
     );

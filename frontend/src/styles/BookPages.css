@@ -235,11 +235,11 @@ button[page-active="true"] {
 }
 
 .star.full {
-    color: #FFD700; /* żółty */
+    color: #FFD700;
 }
 
 .star.empty {
-    color: #ccc; /* szary */
+    color: #ccc;
 }
 
 .book-rating {
@@ -399,6 +399,91 @@ button[page-active="true"] {
 
 .list-search-bar button:hover {
     background: #1c8ed1;
+}
+
+.mybooks-container {
+    padding: 20px;
+    background: linear-gradient(to bottom, #28C9FF, #BBE0ED);
+    min-height: 100vh;
+}
+
+.mybooks-container h2 {
+    color: #fff;
+    font-size: 3em;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: -0.5px 0 black, 0 0.5px black, 0.5px 0 black, 0 -0.5px black;
+    margin-bottom: 30px;
+}
+
+.mybooks-table {
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    border-collapse: collapse;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.mybooks-table th,
+.mybooks-table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.mybooks-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+.mybooks-cover {
+    height: 120px;
+    border-radius: 5px;
+    transition: transform 0.2s;
+}
+.mybooks-cover:hover {
+    transform: scale(1.05);
+}
+
+.title-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+}
+.title-link:hover {
+    text-decoration: underline;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.extend-btn {
+    background-color: #28C9FF;
+    color: white;
+}
+.extend-btn:hover {
+    background-color: #1c8ed1;
+}
+
+.cancel-btn {
+    background-color: #ff4c4c;
+    color: white;
+}
+.cancel-btn:hover {
+    background-color: #cc0000;
+}
+
+.extend-disabled {
+    color: #555;
+    font-style: italic;
 }
 
 @media (max-width: 768px) {
