@@ -1,5 +1,6 @@
 package com.example.Biblioteka_ZTPAI.services;
 
+import com.example.Biblioteka_ZTPAI.dto.book.MyBookDTO;
 import com.example.Biblioteka_ZTPAI.dto.checkout.*;
 import com.example.Biblioteka_ZTPAI.mappers.LoanMapper;
 import com.example.Biblioteka_ZTPAI.models.BookCopy;
@@ -14,9 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.AccessControlException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -137,5 +141,38 @@ public class CheckoutService {
 
     public boolean isBookCopyLoaned(Integer bookCopyId) {
         return loanRepository.findActiveLoanByBookCopyId(bookCopyId).isPresent();
+    }
+
+    @Transactional
+    public MyBookDTO extendLoan(Integer loanId, String username) {
+
+        Loan loan = loanRepository.findActiveLoanById(loanId)
+                .orElseThrow(() -> new NoSuchElementException("Loan not found or already ended"));
+
+        if (!loan.getUser().getUsername().equals(username)) {
+            throw new AccessControlException("You cannot extend a loan that is not yours");
+        }
+
+        if (Boolean.FALSE.equals(loan.getCanExtend())) {
+            throw new IllegalStateException("This loan cannot be extended");
+        }
+
+        LocalDateTime newDueDate = loan.getDueDate().plusDays(7);
+
+        loan.setDueDate(newDueDate);
+        loan.setCanExtend(false);
+
+        loanRepository.save(loan);
+
+        return MyBookDTO.builder()
+                .bookId(loan.getBookCopy().getBook().getId())
+                .bookCopyId(loan.getBookCopy().getId())
+                .cover(loan.getBookCopy().getBook().getCover())
+                .title(loan.getBookCopy().getBook().getTitle())
+                .type("loan")
+                .startDate(loan.getStartDate())
+                .dueDate(loan.getDueDate())
+                .canExtend(false)
+                .build();
     }
 }

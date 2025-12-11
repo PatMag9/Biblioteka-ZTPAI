@@ -52,4 +52,13 @@ public class CheckoutController {
         return checkoutService.returnLoan(dto);
     }
 
+    @PostMapping("/loans/{loanId}/extend")
+    public ResponseEntity<?> extendLoan(
+            @PathVariable Integer loanId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String username = userDetails.getUsername();
+        return ResponseEntity.ok(checkoutService.extendLoan(loanId, username));
+    }
+
 }
