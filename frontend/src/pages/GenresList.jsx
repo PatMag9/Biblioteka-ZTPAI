@@ -53,7 +53,7 @@ const GenresList = () => {
             })
             .catch(err => {
                 console.error(err);
-                setGenres([]); // pusty stan w przypadku błędu
+                setGenres([]);
             });
     };
 

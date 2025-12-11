@@ -1,6 +1,7 @@
 package com.example.Biblioteka_ZTPAI.repositories;
 
 import com.example.Biblioteka_ZTPAI.models.Book;
+import com.example.Biblioteka_ZTPAI.projections.MyBookProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -62,5 +63,50 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
     """)
     List<Object[]> findReviewStatsByBookIds(@Param("bookIds") List<Integer> bookIds);
 
+    @Query(value =
+            "SELECT " +
+                    "   b.id AS bookId, " +
+                    "   bc.id AS bookCopyId, " +
+                    "   b.cover AS cover, " +
+                    "   b.title AS title, " +
+                    "   'loan' AS type, " +
+                    "   l.due_date AS dueDate, " +
+                    "   l.start_date AS startDate, " +
+                    "   l.can_extend AS canExtend " +
+                    "FROM loans l " +
+                    "JOIN book_copies bc ON bc.id = l.book_copy_id " +
+                    "JOIN books b ON b.id = bc.book_id " +
+                    "WHERE l.user_id = :userId " +
+                    "  AND l.end_date IS NULL " +
+
+                    "UNION ALL " +
+
+                    "SELECT " +
+                    "   b.id AS bookId, " +
+                    "   bc.id AS bookCopyId, " +
+                    "   b.cover AS cover, " +
+                    "   b.title AS title, " +
+                    "   'reservation' AS type, " +
+                    "   r.expiration_date AS dueDate, " +
+                    "   r.start_date AS startDate, " +
+                    "   FALSE AS canExtend " +
+                    "FROM reservations r " +
+                    "JOIN book_copies bc ON bc.id = r.book_copy_id " +
+                    "JOIN books b ON b.id = bc.book_id " +
+                    "WHERE r.user_id = :userId " +
+                    "  AND r.end_date IS NULL ",
+
+            countQuery =
+                    "SELECT COUNT(*) FROM (" +
+                            "   SELECT l.id FROM loans l WHERE l.user_id = :userId AND l.end_date IS NULL " +
+                            "   UNION ALL " +
+                            "   SELECT r.id FROM reservations r WHERE r.user_id = :userId AND r.end_date IS NULL " +
+                            ") AS t",
+            nativeQuery = true
+    )
+    Page<MyBookProjection> findUserLoansAndReservations(
+            @Param("userId") Integer userId,
+            Pageable pageable
+    );
 
 }

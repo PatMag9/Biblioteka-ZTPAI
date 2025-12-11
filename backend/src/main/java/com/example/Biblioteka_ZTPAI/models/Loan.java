@@ -36,4 +36,7 @@ public class Loan {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Column(name = "can_extend")
+    private Boolean canExtend;
 }

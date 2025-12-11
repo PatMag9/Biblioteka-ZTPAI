@@ -33,4 +33,7 @@ public class Reservation {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Column(name = "expiration_date")
+    private LocalDateTime expirationDate;
 }

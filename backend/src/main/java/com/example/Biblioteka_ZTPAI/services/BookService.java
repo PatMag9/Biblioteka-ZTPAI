@@ -3,9 +3,12 @@ package com.example.Biblioteka_ZTPAI.services;
 import com.example.Biblioteka_ZTPAI.dto.book.BookCopyDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.MyBookDTO;
 import com.example.Biblioteka_ZTPAI.mappers.BookCopyMapper;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
+import com.example.Biblioteka_ZTPAI.mappers.MyBookMapper;
 import com.example.Biblioteka_ZTPAI.models.*;
+import com.example.Biblioteka_ZTPAI.projections.MyBookProjection;
 import com.example.Biblioteka_ZTPAI.repositories.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -30,6 +33,8 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookCopyMapper bookCopyMapper;
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final MyBookMapper myBookMapper;
 
     private String safe(String s) {
         return (s == null || s.isBlank()) ? null : s.toLowerCase();
@@ -221,6 +226,26 @@ public class BookService {
         } else {
             throw new NoSuchElementException("Book not found");
         }
+    }
+
+    public Page<MyBookDTO> getMyBooks(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Integer userId = userRepository.findUserIdByEmail(username);
+
+        Page<MyBookProjection> pageResult =
+                bookRepository.findUserLoansAndReservations(userId, pageable);
+
+        // mapowanie na DTO
+        List<MyBookDTO> dtoList = pageResult.getContent().stream()
+                .map(myBookMapper::toDTO)
+                .toList();
+
+        return new PageImpl<>(
+                dtoList,
+                pageable,
+                pageResult.getTotalElements()
+        );
     }
 
 }

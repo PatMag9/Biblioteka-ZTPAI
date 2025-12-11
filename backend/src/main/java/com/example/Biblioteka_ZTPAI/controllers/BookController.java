@@ -64,4 +64,16 @@ public class BookController {
         }
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyBooks(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        String username = userDetails.getUsername();
+        return ResponseEntity.ok(
+                bookService.getMyBooks(username, page, size)
+        );
+    }
+
 }
