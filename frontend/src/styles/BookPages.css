@@ -486,6 +486,49 @@ button[page-active="true"] {
     font-style: italic;
 }
 
+.user-component {
+    position: relative;
+}
+
+#user-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+
+.user-menu {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    min-width: 160px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.user-menu-item {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.user-menu-item:hover {
+    background: #f0f0f0;
+}
+
+.user-menu-item.logout {
+    color: #c62828;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .book-header {
         flex-direction: column;
