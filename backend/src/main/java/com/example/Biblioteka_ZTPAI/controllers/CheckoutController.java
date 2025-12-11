@@ -2,7 +2,6 @@ package com.example.Biblioteka_ZTPAI.controllers;
 
 import com.example.Biblioteka_ZTPAI.dto.checkout.CreateReservationDTO;
 import com.example.Biblioteka_ZTPAI.dto.checkout.FinishLoanDTO;
-import com.example.Biblioteka_ZTPAI.dto.checkout.FinishReservationDTO;
 import com.example.Biblioteka_ZTPAI.services.CheckoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +23,12 @@ public class CheckoutController {
         return checkoutService.reserveBookCopy(dto, userDetails.getUsername());
     }
 
-    @PutMapping("/cancelReservation")
+    @PutMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(
-            @RequestBody FinishReservationDTO dto,
+            @PathVariable Integer reservationId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        return checkoutService.cancelReservation(dto, userDetails.getUsername());
+        return checkoutService.cancelReservation(reservationId, userDetails.getUsername());
     }
 
     @GetMapping("/reservations")
@@ -52,7 +51,7 @@ public class CheckoutController {
         return checkoutService.returnLoan(dto);
     }
 
-    @PostMapping("/loans/{loanId}/extend")
+    @PutMapping("/loans/{loanId}/extend")
     public ResponseEntity<?> extendLoan(
             @PathVariable Integer loanId,
             @AuthenticationPrincipal UserDetails userDetails

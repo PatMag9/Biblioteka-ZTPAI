@@ -63,20 +63,18 @@ public class CheckoutService {
         return ResponseEntity.ok("Reservation created successfully");
     }
 
-    public ResponseEntity<?> cancelReservation(FinishReservationDTO dto, String username) {
+    public ResponseEntity<?> cancelReservation(Integer reservationId, String username) {
 
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Optional<Reservation> reservationOpt =
-                reservationRepository.findActiveReservationByBookCopyAndUser(dto.getBookCopyId(), user.getId());
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
-        if (reservationOpt.isEmpty()) {
+        if (!reservation.getUser().getId().equals(user.getId()) || reservation.getEndDate() != null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Active reservation not found or does not belong to current user.");
         }
-
-        Reservation reservation = reservationOpt.get();
 
         reservation.setEndDate(LocalDateTime.now());
 
@@ -165,6 +163,7 @@ public class CheckoutService {
         loanRepository.save(loan);
 
         return MyBookDTO.builder()
+                .itemId(loan.getId())
                 .bookId(loan.getBookCopy().getBook().getId())
                 .bookCopyId(loan.getBookCopy().getId())
                 .cover(loan.getBookCopy().getBook().getCover())
