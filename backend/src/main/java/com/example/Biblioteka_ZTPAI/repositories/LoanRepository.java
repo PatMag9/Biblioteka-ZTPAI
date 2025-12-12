@@ -2,6 +2,8 @@ package com.example.Biblioteka_ZTPAI.repositories;
 
 import com.example.Biblioteka_ZTPAI.dto.checkout.LoanUserBookDTO;
 import com.example.Biblioteka_ZTPAI.models.Loan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,8 +25,12 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     JOIN l.bookCopy bc
     JOIN bc.book b
     WHERE l.endDate IS NULL
+      AND (:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%')))
     """)
-    List<LoanUserBookDTO> findActiveLoansWithUserAndBook();
+    Page<LoanUserBookDTO> findActiveLoansWithUserAndBook(
+            @Param("username") String username,
+            Pageable pageable
+    );
 
     @Query("SELECT l FROM Loan l WHERE l.bookCopy.id = :bookCopyId AND l.endDate IS NULL")
     Optional<Loan> findActiveLoanByBookCopyId(@Param("bookCopyId") Integer bookCopyId);

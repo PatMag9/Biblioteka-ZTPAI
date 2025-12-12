@@ -12,6 +12,9 @@ import com.example.Biblioteka_ZTPAI.repositories.LoanRepository;
 import com.example.Biblioteka_ZTPAI.repositories.ReservationRepository;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -84,8 +87,12 @@ public class CheckoutService {
         return ResponseEntity.ok("Reservation cancelled successfully.");
     }
 
-    public List<ReservationUserBookDTO> getActiveReservations() {
-        return reservationRepository.findActiveReservationsWithUserAndBook();
+    public Page<ReservationUserBookDTO> getActiveReservations(int page, int size, String username) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String search = username != null ? username : "";
+
+        return reservationRepository.findActiveReservationsWithUserAndBook(search, pageable);
     }
 
     public ResponseEntity<?> completeReservation(Integer reservationId) {
@@ -109,8 +116,13 @@ public class CheckoutService {
         return ResponseEntity.ok("Reservation converted to loan.");
     }
 
-    public List<LoanUserBookDTO> getActiveLoans() {
-        return loanRepository.findActiveLoansWithUserAndBook();
+    public Page<LoanUserBookDTO> getActiveLoans(int page, int size, String username) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        
+        String search = username != null ? username : "";
+
+        return loanRepository.findActiveLoansWithUserAndBook(search, pageable);
     }
 
     public ResponseEntity<?> returnLoan(FinishLoanDTO dto) {

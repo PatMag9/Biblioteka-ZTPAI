@@ -23,6 +23,15 @@ public class CheckoutController {
         return checkoutService.reserveBookCopy(dto, userDetails.getUsername());
     }
 
+    @GetMapping("/reservations")
+    public ResponseEntity<?> getActiveReservations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String username
+    ) {
+        return ResponseEntity.ok(checkoutService.getActiveReservations(page, size, username));
+    }
+
     @PutMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(
             @PathVariable Integer reservationId,
@@ -31,19 +40,18 @@ public class CheckoutController {
         return checkoutService.cancelReservation(reservationId, userDetails.getUsername());
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<?> getActiveReservations() {
-        return ResponseEntity.ok(checkoutService.getActiveReservations());
-    }
-
     @PutMapping("/reservations/{reservationId}/confirm")
     public ResponseEntity<?> completeReservation(@PathVariable Integer reservationId) {
         return checkoutService.completeReservation(reservationId);
     }
 
     @GetMapping("/loans")
-    public ResponseEntity<?> getActiveLoans() {
-        return ResponseEntity.ok(checkoutService.getActiveLoans());
+    public ResponseEntity<?> getActiveLoans(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String username
+    ) {
+        return ResponseEntity.ok(checkoutService.getActiveLoans(page, size, username));
     }
 
     @PutMapping("/loans/return")
