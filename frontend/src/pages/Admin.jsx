@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import BookPageHeader from "../components/BookPageHeader.jsx";
 
@@ -45,20 +45,31 @@ const AdminPage = () => {
     }, [navigate]);
 
     return (
-        <div>
-            <BookPageHeader/>
-            <div style={{ padding: 20 }}>
-                <h1>Panel Admina</h1>
-                <button onClick={() => navigate('/admin/books')} style={{ margin: 10, padding: '10px 20px' }}>
-                    Książki
-                </button>
-                <button onClick={() => navigate('/admin/reservations')} style={{ margin: 10, padding: '10px 20px' }}>
-                    Rezerwacje
-                </button>
-                <button onClick={() => navigate('/admin/loans')} style={{ margin: 10, padding: '10px 20px' }}>
-                    Wypożyczenia
-                </button>
-            </div>
+        <div className="admin-container">
+            <BookPageHeader mode="other" searchRedirectPath="/books" />
+
+            <main className="admin-main">
+                <h2>Panel Administratora</h2>
+
+                <section className="admin-cards">
+
+                    <Link to="/admin/books" className="admin-card">
+                        <h3>Lista Książek</h3>
+                        <p>Zarządzaj pełnym katalogiem książek.</p>
+                    </Link>
+
+                    <Link to="/admin/reservations" className="admin-card">
+                        <h3>Lista Rezerwacji</h3>
+                        <p>Przeglądaj i kontroluj aktywne rezerwacje.</p>
+                    </Link>
+
+                    <Link to="/admin/loans" className="admin-card">
+                        <h3>Lista Wypożyczeń</h3>
+                        <p>Monitoruj wszystkie wypożyczenia użytkowników.</p>
+                    </Link>
+
+                </section>
+            </main>
         </div>
     );
 };

@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import "../styles/AdminPages.css"
 import { jwtDecode } from "jwt-decode";
-import BookPageHeader from "../components/BookPageHeader.jsx";
 
 
 
@@ -11,6 +10,9 @@ function ReservationsList() {
     const [isLoading, setIsLoading] = useState(true);
     const [reservations, setReservations] = useState([]);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [searchUser, setSearchUser] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -50,12 +52,21 @@ function ReservationsList() {
         }
     }, [navigate]);
 
+    useEffect(() => {
+        fetchReservations();
+    }, [page, searchUser]);
+
+
     const fetchReservations = () => {
         setIsLoading(true);
-        fetch("http://localhost:8080/api/v1/checkout/reservations", {
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`,
-            },
+        const query = new URLSearchParams({
+            page: page,
+            size: 12,
+            username: searchUser ?? ""
+        }).toString();
+
+        fetch(`http://localhost:8080/api/v1/checkout/reservations?${query}`, {
+            headers: { "Authorization": `Bearer ${localStorage.getItem("jwtToken")}` }
         })
             .then((res) => {
                 if (!res.ok) {
@@ -63,8 +74,9 @@ function ReservationsList() {
                 }
                 return res.json();
             })
-            .then((data) => {
-                setReservations(data);
+            .then(data => {
+                setReservations(data.content);
+                setTotalPages(data.totalPages);
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -72,10 +84,6 @@ function ReservationsList() {
                 setIsLoading(false);
             });
     };
-
-    useEffect(() => {
-        fetchReservations();
-    }, []);
 
     const handleCompleteReservation = (reservationId) => {
         fetch(`http://localhost:8080/api/v1/checkout/reservations/${reservationId}/confirm`, {
@@ -101,63 +109,91 @@ function ReservationsList() {
             });
     };
 
+    const handleSearchKey = (e) => {
+        if (e.key === "Enter") {
+            setPage(0);
+            setSearchUser(e.target.value);
+        }
+    };
+
     if (isLoading) {
-        return <div className="admin-container">Ładowanie rezerwacji...</div>;
+        return <div className="admin-tools-container">Ładowanie rezerwacji...</div>;
     }
 
     if (error) {
-        return <div className="admin-container">Wystąpił błąd: {error}</div>;
+        return <div className="admin-tools-container">Wystąpił błąd: {error}</div>;
     }
 
     return (
-        <>
-            <BookPageHeader/>
-            <div className="admin-container">
-                <h1>Rezerwacje</h1>
-                <div className="admin-book-list">
-                    <div className="admin-book-list-header">
-                        <div className="admin-header-element">Id wypożyczenia</div>
-                        <div className="admin-header-element">Użytkownik</div>
-                        <div className="admin-header-element">Książka</div>
-                        <div className="admin-header-element">Data rozpoczęcia</div>
-                        <div className="admin-header-element">Akcja</div>
-                    </div>
-                    <div className="admin-book-list-body">
-                        {reservations.length === 0 && (
-                            <div className="admin-book-list-row">Brak aktywnych rezerwacji.</div>
-                        )}
-                        {reservations.map((reservation) => (
-                            <div
-                                className="admin-book-card"
-                                key={reservation.id}
-                            >
-                                <div className="admin-book-card-element"  style={{ flex: 3 }}>
-                                    {reservation.id}
-                                </div>
-                                <div className="admin-book-card-element"  style={{ flex: 3 }}>
-                                    {reservation.username || "Brak danych"}
-                                </div>
-                                <div className="admin-book-card-element"  style={{ flex: 2 }}>
-                                    {reservation.bookTitle || "Brak danych"}
-                                </div>
-                                <div className="admin-book-card-element"  style={{ flex: 2 }}>
-                                    {new Date(reservation.startDate).toLocaleString()}
-                                </div>
-                                <div className="admin-book-card-element" style={{ flex: 1 }}>
-                                    <button
-                                        onClick={() =>
-                                            handleCompleteReservation(reservation.id)
-                                        }
-                                    >
-                                        Przekształć w wypożyczenie
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+        <div className="admin-tools-container">
+            <h2 className="admin-title">Lista aktywnych rezerwacji</h2>
+
+            {/* Wyszukiwanie */}
+            <div className="admin-search-bar">
+                <input
+                    type="text"
+                    placeholder="Szukaj po użytkowniku..."
+                    onKeyDown={handleSearchKey}
+                />
+                <button onClick={() =>
+                    setPage(0) || setSearchUser(document.querySelector(".admin-search-bar input").value)
+                }>
+                    Szukaj
+                </button>
             </div>
-        </>
+
+            {/* Tabela */}
+            <table className="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Użytkownik</th>
+                    <th>Książka</th>
+                    <th>Data startowa</th>
+                    <th>Termin</th>
+                    <th>Akcja</th>
+                </tr>
+                </thead>
+                <tbody>
+                {reservations.map((r) => (
+                    <tr key={r.id}>
+                        <td>{r.id}</td>
+                        <td>{r.username}</td>
+                        <td>{r.bookTitle}</td>
+                        <td>{r.startDate.split("T")[0]}</td>
+                        <td>{r.expirationDate.split("T")[0]}</td>
+                        <td>
+                            <button
+                                className="admin-action-btn confirm"
+                                onClick={() => handleCompleteReservation(r.id)}
+                            >
+                                Przekształć w wypożyczenie
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+
+            {/* Paginacja */}
+            <div className="admin-pagination">
+                <button
+                    disabled={page === 0}
+                    onClick={() => setPage(page - 1)}
+                >
+                    Poprzednia
+                </button>
+
+                <span>Strona {page + 1} / {totalPages}</span>
+
+                <button
+                    disabled={page + 1 >= totalPages}
+                    onClick={() => setPage(page + 1)}
+                >
+                    Następna
+                </button>
+            </div>
+        </div>
     );
 }
 

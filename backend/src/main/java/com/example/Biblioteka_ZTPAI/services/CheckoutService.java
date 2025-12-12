@@ -119,7 +119,7 @@ public class CheckoutService {
     public Page<LoanUserBookDTO> getActiveLoans(int page, int size, String username) {
 
         Pageable pageable = PageRequest.of(page, size);
-        
+
         String search = username != null ? username : "";
 
         return loanRepository.findActiveLoansWithUserAndBook(search, pageable);
