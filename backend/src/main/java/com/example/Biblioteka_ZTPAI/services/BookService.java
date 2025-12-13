@@ -1,9 +1,6 @@
 package com.example.Biblioteka_ZTPAI.services;
 
-import com.example.Biblioteka_ZTPAI.dto.book.BookCopyDTO;
-import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
-import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
-import com.example.Biblioteka_ZTPAI.dto.book.MyBookDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.*;
 import com.example.Biblioteka_ZTPAI.mappers.BookCopyMapper;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
 import com.example.Biblioteka_ZTPAI.mappers.MyBookMapper;
@@ -243,6 +240,29 @@ public class BookService {
         return new PageImpl<>(
                 dtoList,
                 pageable,
+                pageResult.getTotalElements()
+        );
+    }
+
+    public Page<AdminBookDTO> getAdminBooks(String search, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Book> spec = Specification.where(null);
+
+        if (search != null && !search.isBlank()) {
+            String like = "%" + search.toLowerCase() + "%";
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("title")), like)
+            );
+        }
+
+        Page<Book> pageResult = bookRepository.findAll(spec, pageable);
+
+        List<AdminBookDTO> dtoList = bookMapper.toAdminDTO(pageResult.getContent());
+
+        return new PageImpl<>(
+                dtoList,
+                pageResult.getPageable(),
                 pageResult.getTotalElements()
         );
     }

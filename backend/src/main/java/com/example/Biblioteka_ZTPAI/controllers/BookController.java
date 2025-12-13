@@ -76,4 +76,15 @@ public class BookController {
         );
     }
 
+    @GetMapping("/admin")
+    public ResponseEntity<?> getAdminBooks(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        return ResponseEntity.ok(
+                bookService.getAdminBooks(search, page, size)
+        );
+    }
+
 }

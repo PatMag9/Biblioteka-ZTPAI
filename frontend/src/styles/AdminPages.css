@@ -67,11 +67,6 @@
     margin-bottom: 20px;
     color: #2c3e50;
 }
-
-/* -------------------- */
-/*    WYSZUKIWARKA       */
-/* -------------------- */
-
 .admin-search-bar {
     display: flex;
     gap: 10px;
@@ -108,10 +103,6 @@
 .admin-search-bar button:hover {
     background-color: #3a74d8;
 }
-
-/* -------------------- */
-/*        TABELA         */
-/* -------------------- */
 
 .admin-table {
     width: 100%;
@@ -156,10 +147,6 @@
     transition: background-color 0.2s ease;
 }
 
-/* -------------------- */
-/*        AKCJE          */
-/* -------------------- */
-
 .admin-action-btn {
     padding: 6px 14px;
     font-size: 13px;
@@ -187,10 +174,6 @@
 .admin-action-btn.return:hover {
     opacity: 0.85;
 }
-
-/* -------------------- */
-/*      PAGINACJA        */
-/* -------------------- */
 
 .admin-pagination {
     display: flex;

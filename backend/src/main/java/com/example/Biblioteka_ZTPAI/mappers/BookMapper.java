@@ -1,5 +1,6 @@
 package com.example.Biblioteka_ZTPAI.mappers;
 
+import com.example.Biblioteka_ZTPAI.dto.book.AdminBookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.models.Book;
@@ -28,4 +29,12 @@ public interface BookMapper {
     @Mapping(source = "authors", target = "authors")
     @Mapping(source = "bookCopies", target = "copies")
     BookDTO toDTO(Book book);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "genre", target = "genre")
+    @Mapping(source = "authors", target = "authors")
+    @Mapping(source = "bookCopies", target = "copies")
+    AdminBookDTO toAdminDTO(Book book);
+
+    List<AdminBookDTO> toAdminDTO(List<Book> books);
 }
