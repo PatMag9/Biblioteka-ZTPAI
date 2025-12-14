@@ -1,9 +1,12 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
 import com.example.Biblioteka_ZTPAI.dto.book.GenreDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.admin.CreateGenreDTO;
 import com.example.Biblioteka_ZTPAI.services.GenreService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,20 @@ public class GenreController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(genres);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createGenre(
+            @Valid @RequestBody CreateGenreDTO dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(genreService.createGenre(dto));
+    }
+
+    @DeleteMapping("/{genreId}")
+    public ResponseEntity<?> deleteGenre(@PathVariable Integer genreId) {
+        genreService.deleteGenre(genreId);
+        return ResponseEntity.noContent().build();
     }
 
 }
