@@ -35,7 +35,7 @@ public class SecurityConfig {
                             "/covers/**",
                             "/uploads/**"
                     ).permitAll();
-                    //auth.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
                     auth.requestMatchers("/api/v1/auth/**", "/api/docs/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
