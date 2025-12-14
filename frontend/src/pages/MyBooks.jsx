@@ -105,7 +105,7 @@ export default function MyBooks() {
                                 <td className="cover-cell">
                                     <Link to={`/book/${item.bookId}`}>
                                         <img
-                                            src={`/uploads/${item.cover}`}
+                                            src={`http://localhost:8080/covers/${book.cover}`}
                                             alt="cover"
                                             className="mybooks-cover"
                                         />

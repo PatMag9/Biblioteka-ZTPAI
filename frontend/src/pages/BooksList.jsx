@@ -148,7 +148,7 @@ function BooksList() {
                                 <div className="book-cover">
                                     <Link to={`/book/${book.id}`}>
                                         {book.cover && (
-                                            <img src={`/uploads/${book.cover}`} alt="cover_art" />
+                                            <img src={`http://localhost:8080/covers/${book.cover}`} alt="cover_art" />
                                         )}
                                     </Link>
                                 </div>

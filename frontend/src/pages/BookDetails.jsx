@@ -180,7 +180,7 @@ function BookDetails() {
                     <div className="book-page">
                         <div className="book-info">
                             <div className="book-cover">
-                                {book.cover && <img src={`/uploads/${book.cover}`} alt="cover_art" />}
+                                {book.cover && <img src={`http://localhost:8080/covers/${book.cover}`} alt="cover_art" />}
                             </div>
 
                             <div className="book-details">
