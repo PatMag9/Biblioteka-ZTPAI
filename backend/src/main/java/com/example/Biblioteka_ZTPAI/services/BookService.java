@@ -270,11 +270,39 @@ public class BookService {
 
         List<AdminBookDTO> dtoList = bookMapper.toAdminDTO(pageResult.getContent());
 
-        return new PageImpl<>(
-                dtoList,
-                pageResult.getPageable(),
-                pageResult.getTotalElements()
-        );
+        for (int i = 0; i < pageResult.getContent().size(); i++) {
+            Book book = pageResult.getContent().get(i);
+            AdminBookDTO dto = dtoList.get(i);
+
+            List<BookCopy> copies = bookCopyRepository.findAllByBookIdWithPublisher(book.getId());
+            List<BookCopyDTO> copyDTOs = bookCopyMapper.toDTO(copies);
+
+            List<Integer> copyIds = copyDTOs.stream()
+                    .map(BookCopyDTO::getId)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            Map<Integer, Reservation> activeReservationMap = new HashMap<>();
+            Map<Integer, Loan> activeLoanMap = new HashMap<>();
+
+            if (!copyIds.isEmpty()) {
+                List<Reservation> activeReservations = reservationRepository.findActiveReservationsByBookCopyIds(copyIds);
+                activeReservations.forEach(r -> activeReservationMap.putIfAbsent(r.getBookCopy().getId(), r));
+
+                List<Loan> activeLoans = loanRepository.findActiveLoansByBookCopyIds(copyIds);
+                activeLoans.forEach(l -> activeLoanMap.putIfAbsent(l.getBookCopy().getId(), l));
+            }
+
+            for (BookCopyDTO bcDto : copyDTOs) {
+                Integer cid = bcDto.getId();
+                bcDto.setLoaned(activeLoanMap.containsKey(cid));
+                bcDto.setReserved(activeReservationMap.containsKey(cid));
+            }
+
+            dto.setCopies(copyDTOs);
+        }
+
+        return new PageImpl<>(dtoList, pageResult.getPageable(), pageResult.getTotalElements());
     }
 
     @Transactional
