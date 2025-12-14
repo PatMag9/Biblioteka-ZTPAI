@@ -17,4 +17,6 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
             "OR LOWER(a.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(a.surname) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Author> searchByFullNameIgnoreCase(@Param("query") String query, Pageable pageable);
+
+    boolean existsByNameIgnoreCaseAndSurnameIgnoreCase(String name, String surname);
 }
