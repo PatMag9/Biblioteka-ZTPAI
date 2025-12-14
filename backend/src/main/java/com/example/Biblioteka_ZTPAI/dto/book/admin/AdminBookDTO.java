@@ -1,5 +1,8 @@
-package com.example.Biblioteka_ZTPAI.dto.book;
+package com.example.Biblioteka_ZTPAI.dto.book.admin;
 
+import com.example.Biblioteka_ZTPAI.dto.book.BookAuthorDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.BookCopyDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.GenreDTO;
 import lombok.Builder;
 import lombok.Data;
 

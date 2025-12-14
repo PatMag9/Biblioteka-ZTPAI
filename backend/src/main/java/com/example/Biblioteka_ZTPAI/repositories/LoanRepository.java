@@ -1,6 +1,7 @@
 package com.example.Biblioteka_ZTPAI.repositories;
 
 import com.example.Biblioteka_ZTPAI.dto.checkout.LoanUserBookDTO;
+import com.example.Biblioteka_ZTPAI.models.BookCopy;
 import com.example.Biblioteka_ZTPAI.models.Loan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +41,6 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
 
     @Query("SELECT l FROM Loan l WHERE l.id = :loanId AND l.endDate IS NULL")
     Optional<Loan> findActiveLoanById(@Param("loanId") Integer loanId);
+
+    boolean existsByBookCopyAndEndDateIsNull(BookCopy copy);
 }

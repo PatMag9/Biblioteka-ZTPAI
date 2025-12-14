@@ -1,6 +1,7 @@
 package com.example.Biblioteka_ZTPAI.services;
 
 import com.example.Biblioteka_ZTPAI.dto.book.*;
+import com.example.Biblioteka_ZTPAI.dto.book.admin.*;
 import com.example.Biblioteka_ZTPAI.mappers.BookCopyMapper;
 import com.example.Biblioteka_ZTPAI.mappers.BookMapper;
 import com.example.Biblioteka_ZTPAI.mappers.MyBookMapper;
@@ -15,7 +16,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,11 +36,23 @@ public class BookService {
     private final BookCopyRepository bookCopyRepository;
     private final ReservationRepository reservationRepository;
     private final LoanRepository loanRepository;
-    private final BookMapper bookMapper;
-    private final BookCopyMapper bookCopyMapper;
+    private final GenreRepository genreRepository;
+    private final AuthorRepository authorRepository;
+    private final PublisherRepository publisherRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+
+    private final BookMapper bookMapper;
+    private final BookCopyMapper bookCopyMapper;
     private final MyBookMapper myBookMapper;
+
+    private static final long MAX_COVER_SIZE = 2 * 1024 * 1024; // 2 MB
+
+    private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+    );
 
     private String safe(String s) {
         return (s == null || s.isBlank()) ? null : s.toLowerCase();
@@ -214,17 +235,6 @@ public class BookService {
         return ResponseEntity.ok(dto);
     }
 
-    public ResponseEntity<Object> deleteBook(int bookId) {
-        Optional<Book> bookOpt = bookRepository.findById(bookId);
-
-        if (bookOpt.isPresent()) {
-            bookRepository.deleteById(bookId);
-            return ResponseEntity.noContent().build();
-        } else {
-            throw new NoSuchElementException("Book not found");
-        }
-    }
-
     public Page<MyBookDTO> getMyBooks(String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -265,6 +275,205 @@ public class BookService {
                 pageResult.getPageable(),
                 pageResult.getTotalElements()
         );
+    }
+
+    @Transactional
+    public void createBook(CreateBookDTO dto, MultipartFile coverFile) {
+
+        Genre genre = null;
+        if (dto.getGenreId() != null) {
+            genre = genreRepository.findById(dto.getGenreId())
+                    .orElseThrow(() -> new IllegalArgumentException("Genre not found"));
+        }
+
+        Set<Author> authors = new HashSet<>();
+        if (dto.getAuthorIds() != null && !dto.getAuthorIds().isEmpty()) {
+            authors.addAll(authorRepository.findAllById(dto.getAuthorIds()));
+        }
+
+        String coverFileName = null;
+
+        if (coverFile != null && !coverFile.isEmpty()) {
+            coverFileName = saveCoverFile(coverFile);
+        }
+
+        Book book = Book.builder()
+                .title(dto.getTitle())
+                .genre(genre)
+                .description(dto.getDescription())
+                .cover(coverFileName)
+                .authors(authors)
+                .dateAdded(LocalDateTime.now())
+                .build();
+
+        bookRepository.save(book);
+    }
+
+    private String saveCoverFile(MultipartFile file) {
+
+        validateCoverFile(file);
+
+        try {
+            String uploadDir = "uploads/covers/";
+            Files.createDirectories(Paths.get(uploadDir));
+
+            String extension = getFileExtension(file.getOriginalFilename());
+            String fileName = UUID.randomUUID() + "." + extension;
+
+            Path targetPath = Paths.get(uploadDir).resolve(fileName);
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            return fileName;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save cover file", e);
+        }
+    }
+
+    private void validateCoverFile(MultipartFile file) {
+
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Cover file is empty");
+        }
+
+        if (file.getSize() > MAX_COVER_SIZE) {
+            throw new IllegalArgumentException("Cover file size must not exceed 2MB");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException("Cover file must be an image (JPEG, PNG, WEBP)");
+        }
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf('.') + 1);
+    }
+
+    private void deleteCoverFile(String fileName) {
+        if (fileName == null) return;
+
+        try {
+            Path path = Paths.get("uploads/covers/").resolve(fileName);
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete old cover file", e);
+        }
+    }
+
+    @Transactional
+    public void updateBook(Integer bookId, UpdateBookDTO dto, MultipartFile cover) {
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        if (dto.getTitle() != null) {
+            book.setTitle(dto.getTitle());
+        }
+
+        if (dto.getDescription() != null) {
+            book.setDescription(dto.getDescription());
+        }
+
+        if (dto.getGenreId() != null) {
+            Genre genre = genreRepository.findById(dto.getGenreId())
+                    .orElseThrow(() -> new IllegalArgumentException("Genre not found"));
+            book.setGenre(genre);
+        }
+
+        if (dto.getAuthorIds() != null) {
+            Set<Author> authors = new HashSet<>(authorRepository.findAllById(dto.getAuthorIds()));
+            book.setAuthors(authors);
+        }
+
+        if (cover != null && !cover.isEmpty()) {
+
+            deleteCoverFile(book.getCover());
+
+            String newCoverFileName = saveCoverFile(cover);
+            book.setCover(newCoverFileName);
+        }
+
+        bookRepository.save(book);
+    }
+
+    @Transactional
+    public void addBookCopy(Integer bookId, CreateBookCopyDTO dto) {
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        Publisher publisher = null;
+        if (dto.getPublisherId() != null) {
+            publisher = publisherRepository.findById(dto.getPublisherId())
+                    .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
+        }
+
+        BookCopy copy = BookCopy.builder()
+                .book(book)
+                .isbn(dto.getIsbn())
+                .publisher(publisher)
+                .yearPublished(dto.getYearPublished())
+                .build();
+
+        bookCopyRepository.save(copy);
+    }
+
+    @Transactional
+    public void updateBookCopy(Integer copyId, UpdateBookCopyDTO dto) {
+
+        BookCopy copy = bookCopyRepository.findById(copyId)
+                .orElseThrow(() -> new IllegalArgumentException("Book copy not found"));
+
+        if (dto.getIsbn() != null) {
+            copy.setIsbn(dto.getIsbn());
+        }
+
+        if (dto.getYearPublished() != null) {
+            copy.setYearPublished(dto.getYearPublished());
+        }
+
+        if (dto.getPublisherId() != null) {
+            Publisher publisher = publisherRepository.findById(dto.getPublisherId())
+                    .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
+            copy.setPublisher(publisher);
+        }
+
+        bookCopyRepository.save(copy);
+    }
+
+    @Transactional
+    public void deleteBookCopy(Integer copyId) {
+
+        BookCopy copy = bookCopyRepository.findById(copyId)
+                .orElseThrow(() -> new IllegalArgumentException("Book copy not found"));
+
+        boolean hasActiveLoan = loanRepository.existsByBookCopyAndEndDateIsNull(copy);
+        boolean hasActiveReservation = reservationRepository.existsByBookCopyAndEndDateIsNull(copy);
+
+        if (hasActiveLoan || hasActiveReservation) {
+            throw new IllegalStateException("Cannot delete book copy with active loan or reservation");
+        }
+
+        bookCopyRepository.delete(copy);
+    }
+
+
+
+    @Transactional
+    public void deleteBook(Integer bookId) {
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        if (!book.getBookCopies().isEmpty()) {
+            throw new IllegalStateException("Cannot delete book with existing copies");
+        }
+
+        bookRepository.delete(book);
     }
 
 }

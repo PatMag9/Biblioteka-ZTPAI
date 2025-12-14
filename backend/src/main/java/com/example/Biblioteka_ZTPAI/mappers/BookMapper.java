@@ -1,6 +1,6 @@
 package com.example.Biblioteka_ZTPAI.mappers;
 
-import com.example.Biblioteka_ZTPAI.dto.book.AdminBookDTO;
+import com.example.Biblioteka_ZTPAI.dto.book.admin.AdminBookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookDTO;
 import com.example.Biblioteka_ZTPAI.dto.book.BookListDTO;
 import com.example.Biblioteka_ZTPAI.models.Book;

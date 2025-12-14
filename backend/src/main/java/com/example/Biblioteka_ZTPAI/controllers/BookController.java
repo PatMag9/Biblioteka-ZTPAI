@@ -41,11 +41,6 @@ public class BookController {
         return bookService.getBookById(bookId, username);
     }
 
-    @DeleteMapping("/{bookId}")
-    public ResponseEntity<Object> deleteBook(@PathVariable int bookId) {
-        return bookService.deleteBook(bookId);
-    }
-
     @GetMapping("/{bookId}/reviews")
     public ResponseEntity<Object> getReviews(@PathVariable Integer bookId) {
         return ResponseEntity.ok(reviewService.getReviewsForBook(bookId));
@@ -73,17 +68,6 @@ public class BookController {
         String username = userDetails.getUsername();
         return ResponseEntity.ok(
                 bookService.getMyBooks(username, page, size)
-        );
-    }
-
-    @GetMapping("/admin")
-    public ResponseEntity<?> getAdminBooks(
-            @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
-    ) {
-        return ResponseEntity.ok(
-                bookService.getAdminBooks(search, page, size)
         );
     }
 
