@@ -127,7 +127,6 @@ function LoansList() {
         <div className="admin-tools-container">
             <h2 className="admin-title">Lista aktywnych wypożyczeń</h2>
 
-            {/* Wyszukiwanie */}
             <div className="admin-search-bar">
                 <input
                     type="text"
@@ -141,7 +140,6 @@ function LoansList() {
                 </button>
             </div>
 
-            {/* Tabela */}
             <table className="admin-table">
                 <thead>
                 <tr>
@@ -174,7 +172,6 @@ function LoansList() {
                 </tbody>
             </table>
 
-            {/* Paginacja */}
             <div className="admin-pagination">
                 <button
                     disabled={page === 0}

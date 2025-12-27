@@ -228,7 +228,6 @@ button[page-active="true"] {
     background-color: #f2f2f2;
 }
 
-/* Gwiazdki ocen */
 .star {
     font-size: 1.2em;
     margin-right: 2px;
@@ -254,7 +253,6 @@ button[page-active="true"] {
     color: #555;
 }
 
-/* Lista recenzji */
 .reviews-section {
     margin-top: 30px;
 }

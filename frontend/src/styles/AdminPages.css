@@ -266,10 +266,6 @@
     background-color: #27ae60;
 }
 
-/* ===========================
-   LISTA KSIĄŻEK
-=========================== */
-
 .admin-books-list {
     max-width: 1100px;
     margin: 0 auto;
@@ -290,10 +286,6 @@
     transform: translateY(-3px);
     box-shadow: 0 6px 14px rgba(0,0,0,0.2);
 }
-
-/* ===========================
-   HEADER KSIĄŻKI
-=========================== */
 
 .book-header {
     display: flex;
@@ -326,10 +318,6 @@
     color: #333;
 }
 
-/* ===========================
-   AKCJE KSIĄŻKI
-=========================== */
-
 .book-actions {
     display: flex;
     flex-direction: column;
@@ -361,20 +349,12 @@
     cursor: not-allowed;
 }
 
-/* ===========================
-   OPIS
-=========================== */
-
 .book-description {
     margin-top: 15px;
     font-size: 14px;
     line-height: 1.5;
     color: #444;
 }
-
-/* ===========================
-   EGZEMPLARZE
-=========================== */
 
 .copies-section {
     margin-top: 15px;
@@ -396,10 +376,6 @@
     border-radius: 10px;
 }
 
-/* ===========================
-   WIERSZ EGZEMPLARZA
-=========================== */
-
 .copy-row {
     display: grid;
     grid-template-columns: repeat(5, 1fr) auto;
@@ -413,7 +389,6 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-/* Statusy */
 .copy-row.status-available {
     border-left: 5px solid #2ecc71;
 }
@@ -429,10 +404,6 @@
 .copy-status {
     font-weight: 700;
 }
-
-/* ===========================
-   AKCJE EGZEMPLARZA
-=========================== */
 
 .copy-actions {
     display: flex;
@@ -458,10 +429,6 @@
     background-color: #c2c6c9;
     cursor: not-allowed;
 }
-
-/* ===========================
-   FORMULARZE (BOOK / COPY)
-=========================== */
 
 .admin-form {
     margin-top: 15px;
@@ -502,10 +469,6 @@
     box-shadow: 0 0 4px rgba(50,150,255,0.3);
 }
 
-/* ===========================
-   AUTORZY – CHECKBOXY
-=========================== */
-
 .authors-select {
     display: flex;
     flex-wrap: wrap;
@@ -518,11 +481,6 @@
     align-items: center;
     gap: 6px;
 }
-
-/* ===========================
-   AKCJE FORMULARZA
-=========================== */
-
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -546,10 +504,6 @@
 .form-actions button:hover {
     opacity: 0.85;
 }
-
-/* ===========================
-   PAGINACJA
-=========================== */
 
 .pagination {
     display: flex;

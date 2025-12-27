@@ -38,9 +38,9 @@ function BookPageHeader({ onSearch, searchRedirectPath }) {
         const queryText = document.querySelector('input[name="search-input"]').value;
 
         if (onSearch) {
-            onSearch(queryText);            // normalne wyszukiwanie w BookList
+            onSearch(queryText);
         } else if (searchRedirectPath) {
-            navigate(`${searchRedirectPath}?search=${queryText}`);   // przeniesienie na BookList
+            navigate(`${searchRedirectPath}?search=${queryText}`);
         }
     };
 

@@ -3,7 +3,6 @@ import {useNavigate} from "react-router-dom";
 import "../styles/AdminPages.css"
 import { jwtDecode } from "jwt-decode";
 
-const API = "http://localhost:8080/api/v1";
 const API_URL = "http://localhost:8080/api/v1/admin/books";
 
 function BookAdminList() {
@@ -525,7 +524,6 @@ function BookForm({ book, genres, authors, onSubmit, onCancel }) {
                 })}
             </div>
 
-            {/* Wyszukiwarka autorów */}
             <input
                 type="text"
                 placeholder="Dodaj autora..."

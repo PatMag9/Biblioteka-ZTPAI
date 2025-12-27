@@ -128,7 +128,6 @@ function ReservationsList() {
         <div className="admin-tools-container">
             <h2 className="admin-title">Lista aktywnych rezerwacji</h2>
 
-            {/* Wyszukiwanie */}
             <div className="admin-search-bar">
                 <input
                     type="text"
@@ -142,7 +141,6 @@ function ReservationsList() {
                 </button>
             </div>
 
-            {/* Tabela */}
             <table className="admin-table">
                 <thead>
                 <tr>
@@ -175,7 +173,6 @@ function ReservationsList() {
                 </tbody>
             </table>
 
-            {/* Paginacja */}
             <div className="admin-pagination">
                 <button
                     disabled={page === 0}
