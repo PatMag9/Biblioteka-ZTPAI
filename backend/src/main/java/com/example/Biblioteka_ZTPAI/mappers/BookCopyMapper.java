@@ -11,7 +11,7 @@ import java.util.List;
 public interface BookCopyMapper {
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "isbn", target = "isbn")
+    @Mapping(source = "code", target = "code")
     @Mapping(source = "publisher", target = "publisher")
     @Mapping(source = "yearPublished", target = "yearPublished")
     BookCopyDTO toDTO(BookCopy copy);

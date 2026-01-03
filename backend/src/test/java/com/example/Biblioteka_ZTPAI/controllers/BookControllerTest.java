@@ -147,7 +147,7 @@ public class BookControllerTest {
     void getBookCopies_shouldReturnCopies() throws Exception {
         BookCopy copy = new BookCopy();
         copy.setIdBookCopy(1);
-        copy.setIsbn("123-456-789");
+        copy.setCode("123-456-789");
 
         Mockito.when(bookService.getBookCopiesByBookId(1))
                 .thenReturn(ResponseEntity.ok(Collections.singletonList(copy)));
@@ -156,7 +156,7 @@ public class BookControllerTest {
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id_book_copy").value(1))
-                .andExpect(jsonPath("$[0].isbn").value("123-456-789"));
+                .andExpect(jsonPath("$[0].code").value("123-456-789"));
     }
 
     @Test

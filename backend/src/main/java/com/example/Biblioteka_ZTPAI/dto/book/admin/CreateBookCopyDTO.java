@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 @Builder
 public class CreateBookCopyDTO {
-    @NotBlank(message = "ISBN cannot be null")
-    @Size(max = 17, message = "ISBN cannot exceed 17 characters")
-    private String isbn;
+    @NotBlank(message = "Code cannot be null")
+    @Size(max = 17, message = "Code cannot exceed 17 characters")
+    private String code;
     @NotNull(message = "Publisher is required")
     private Integer publisherId;
     @NotNull(message = "Year published is required")

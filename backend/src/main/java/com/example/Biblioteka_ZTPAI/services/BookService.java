@@ -442,7 +442,7 @@ public class BookService {
 
         BookCopy copy = BookCopy.builder()
                 .book(book)
-                .isbn(dto.getIsbn())
+                .code(dto.getCode())
                 .publisher(publisher)
                 .yearPublished(dto.getYearPublished())
                 .build();
@@ -456,8 +456,8 @@ public class BookService {
         BookCopy copy = bookCopyRepository.findById(copyId)
                 .orElseThrow(() -> new IllegalArgumentException("Book copy not found"));
 
-        if (dto.getIsbn() != null) {
-            copy.setIsbn(dto.getIsbn());
+        if (dto.getCode() != null) {
+            copy.setCode(dto.getCode());
         }
 
         if (dto.getYearPublished() != null) {

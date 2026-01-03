@@ -25,8 +25,8 @@ public class BookCopy {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    @Column(name = "isbn", length = 17)
-    private String isbn;
+    @Column(name = "code", length = 17)
+    private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")

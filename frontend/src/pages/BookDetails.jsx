@@ -214,7 +214,7 @@ function BookDetails() {
                                     <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>ISBN</th>
+                                        <th>Kod książki</th>
                                         <th>Wydawca</th>
                                         <th>Rok</th>
                                         <th>Akcja</th>
@@ -244,7 +244,7 @@ function BookDetails() {
                                         return (
                                             <tr key={copy.id}>
                                                 <td>{copy.id}</td>
-                                                <td>{copy.isbn}</td>
+                                                <td>{copy.code}</td>
                                                 <td>{copy.publisher?.name ?? "Nieznany"}</td>
                                                 <td>{copy.yearPublished}</td>
                                                 <td>{button}</td>

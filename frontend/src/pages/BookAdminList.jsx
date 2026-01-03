@@ -374,7 +374,7 @@ function BookAdminList() {
                                         <div key={copy.id}
                                              className={`copy-row status-${getCopyStatus(copy).toLowerCase()}`}>
                                             <span>ID: {copy.id}</span>
-                                            <span>ISBN: {copy.isbn}</span>
+                                            <span>Kod książki: {copy.code}</span>
                                             <span>Wydawnictwo: {copy.publisher?.name}</span>
                                             <span>Rok: {copy.yearPublished}</span>
                                             <span className="copy-status">
@@ -551,13 +551,13 @@ function BookForm({ book, genres, authors, onSubmit, onCancel }) {
 }
 
 function BookCopyForm({copy, publishers, onSubmit, onCancel}) {
-    const [isbn, setIsbn] = useState(copy?.isbn || "");
+    const [code, setCode] = useState(copy?.code || "");
     const [publisherId, setPublisherId] = useState(copy?.publisher?.id || "");
     const [year, setYear] = useState(copy?.yearPublished || "");
 
     const handleSubmit = () => {
         onSubmit({
-            isbn,
+            code,
             publisherId,
             yearPublished: year
         });
@@ -567,7 +567,7 @@ function BookCopyForm({copy, publishers, onSubmit, onCancel}) {
         <div className="admin-form">
             <h4>{copy ? "Edytuj egzemplarz" : "Dodaj egzemplarz"}</h4>
 
-            <input value={isbn} onChange={e => setIsbn(e.target.value)} placeholder="ISBN" />
+            <input value={code} onChange={e => setCode(e.target.value)} placeholder="Code" />
 
             <select value={publisherId} onChange={e => setPublisherId(e.target.value)}>
                 <option value="">-- wybierz wydawnictwo --</option>
