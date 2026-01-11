@@ -15,6 +15,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -235,8 +236,9 @@ public class BookService {
         return ResponseEntity.ok(dto);
     }
 
-    public Page<MyBookDTO> getMyBooks(String username, int page, int size) {
+    public Page<MyBookDTO> getMyBooks(UserDetails userDetails, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        String username = userDetails.getUsername();
 
         Integer userId = userRepository.findUserIdByEmail(username);
 
@@ -307,7 +309,6 @@ public class BookService {
 
     @Transactional
     public void createBook(CreateBookDTO dto, MultipartFile coverFile) {
-
         Genre genre = null;
         if (dto.getGenreId() != null) {
             genre = genreRepository.findById(dto.getGenreId())
@@ -320,7 +321,6 @@ public class BookService {
         }
 
         String coverFileName = null;
-
         if (coverFile != null && !coverFile.isEmpty()) {
             coverFileName = saveCoverFile(coverFile);
         }

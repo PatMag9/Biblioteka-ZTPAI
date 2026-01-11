@@ -63,7 +63,7 @@ public class AdminBookController {
             @Valid @RequestBody CreateBookCopyDTO dto
     ) {
         bookService.addBookCopy(bookId, dto);
-        return ResponseEntity.ok("Book copy added successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Book copy added successfully");
     }
 
     @PutMapping("/copies/{copyId}")

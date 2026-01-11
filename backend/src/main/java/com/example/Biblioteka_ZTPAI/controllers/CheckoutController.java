@@ -2,9 +2,11 @@ package com.example.Biblioteka_ZTPAI.controllers;
 
 import com.example.Biblioteka_ZTPAI.dto.checkout.CreateReservationDTO;
 import com.example.Biblioteka_ZTPAI.dto.checkout.FinishLoanDTO;
+import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.services.CheckoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +21,6 @@ public class CheckoutController {
     public ResponseEntity<?> reserveBookCopy(
             @RequestBody CreateReservationDTO dto,
             @AuthenticationPrincipal UserDetails userDetails) {
-
         return checkoutService.reserveBookCopy(dto, userDetails.getUsername());
     }
 
@@ -36,11 +37,11 @@ public class CheckoutController {
     public ResponseEntity<?> cancelReservation(
             @PathVariable Integer reservationId,
             @AuthenticationPrincipal UserDetails userDetails) {
-
         return checkoutService.cancelReservation(reservationId, userDetails.getUsername());
     }
 
     @PutMapping("/reservations/{reservationId}/confirm")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> completeReservation(@PathVariable Integer reservationId) {
         return checkoutService.completeReservation(reservationId);
     }
@@ -55,6 +56,7 @@ public class CheckoutController {
     }
 
     @PutMapping("/loans/return")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> returnLoan(@RequestBody FinishLoanDTO dto) {
         return checkoutService.returnLoan(dto);
     }

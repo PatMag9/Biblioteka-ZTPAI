@@ -53,7 +53,7 @@ public class BookController {
             @AuthenticationPrincipal User user
     ) {
         try {
-            return ResponseEntity.ok(reviewService.addReview(bookId, user.getId(), dto));
+            return new ResponseEntity<>(reviewService.addReview(bookId, user.getId(), dto), HttpStatus.CREATED);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -65,9 +65,8 @@ public class BookController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size
     ) {
-        String username = userDetails.getUsername();
         return ResponseEntity.ok(
-                bookService.getMyBooks(username, page, size)
+                bookService.getMyBooks(userDetails, page, size)
         );
     }
 

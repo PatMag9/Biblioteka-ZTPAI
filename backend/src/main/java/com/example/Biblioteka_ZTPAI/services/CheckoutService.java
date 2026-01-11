@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.AccessControlException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -64,7 +63,7 @@ public class CheckoutService {
 
         reservationRepository.save(reservation);
 
-        return ResponseEntity.ok("Reservation created successfully");
+        return new ResponseEntity<>("Reservation created successfully", HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> cancelReservation(Integer reservationId, String username) {
@@ -113,7 +112,7 @@ public class CheckoutService {
         Loan loan = loanMapper.toEntity(dto);
         loanRepository.save(loan);
 
-        return ResponseEntity.ok("Reservation converted to loan.");
+        return new ResponseEntity<>("Reservation converted to loan.", HttpStatus.CREATED);
     }
 
     public Page<LoanUserBookDTO> getActiveLoans(int page, int size, String username) {

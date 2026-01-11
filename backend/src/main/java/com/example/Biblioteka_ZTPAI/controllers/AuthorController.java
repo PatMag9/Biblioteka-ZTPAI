@@ -19,11 +19,11 @@ public class AuthorController {
 
     @GetMapping
     public ResponseEntity<?> getAuthors(
-            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<BookAuthorDTO> authors = authorService.getAuthors(query, page, size);
+        Page<BookAuthorDTO> authors = authorService.getAuthors(name, page, size);
 
         if (authors.isEmpty()) {
             return ResponseEntity.noContent().build();
