@@ -50,10 +50,10 @@ public class BookController {
     public ResponseEntity<Object> addReview(
             @PathVariable Integer bookId,
             @Valid @RequestBody ReviewCreateDTO dto,
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal UserDetails user
     ) {
         try {
-            return new ResponseEntity<>(reviewService.addReview(bookId, user.getId(), dto), HttpStatus.CREATED);
+            return new ResponseEntity<>(reviewService.addReview(bookId, user.getUsername(), dto), HttpStatus.CREATED);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

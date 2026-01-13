@@ -1,211 +1,215 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
-import com.example.Biblioteka_ZTPAI.models.User;
-import com.example.Biblioteka_ZTPAI.services.CheckoutService;
-import com.example.Biblioteka_ZTPAI.services.JwtService;
-import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
+import com.example.Biblioteka_ZTPAI.dto.checkout.CreateReservationDTO;
+import com.example.Biblioteka_ZTPAI.dto.checkout.FinishLoanDTO;
+import com.example.Biblioteka_ZTPAI.models.*;
+import com.example.Biblioteka_ZTPAI.repositories.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-public class CheckoutControllerTest {
-/*
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private CheckoutService checkoutService;
-
-    @MockBean
-    private UserRepository userRepository;
+@ActiveProfiles("test")
+@Transactional
+class CheckoutControllerTest {
 
     @Autowired
-    private JwtService jwtService;
+    private WebApplicationContext context;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    private User testUser;
-    private String jwtToken;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private BookCopyRepository bookCopyRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private LoanRepository loanRepository;
+
+    private MockMvc mockMvc;
+    private String adminJwt;
+    private String userJwt;
+
+    private User user;
+    private User admin;
+    private Book testBook;
+    private BookCopy testCopy;
+    private Reservation testReservation;
+    private Loan testLoan;
 
     @BeforeEach
-    void setup() {
-        testUser = new User();
-        testUser.setId_user(1);
-        testUser.setUsername("user");
-        testUser.setEmail("user@user.com");
-        testUser.setPassword("user");
-
-        when(userRepository.findByEmail("user@user.com")).thenReturn(Optional.of(testUser));
-        jwtToken = generateTokenForUser(testUser);
-    }
-
-    private String generateTokenForUser(User user) {
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles("USER")
+    void setup() throws Exception {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
                 .build();
 
-        return jwtService.generateToken(userDetails);
-    }
+        Role adminRole = new Role(); adminRole.setName("ADMIN"); roleRepository.save(adminRole);
+        Role userRole = new Role(); userRole.setName("USER"); roleRepository.save(userRole);
 
-    @Test
-    void reserveBookCopy_shouldReturnOk() throws Exception {
-        when(checkoutService.isBookCopyReserved(1)).thenReturn(false);
-        when(checkoutService.isBookCopyLoaned(1)).thenReturn(false);
-        when(checkoutService.reserveBookCopy(eq(1), any(User.class)))
-                .thenReturn(ResponseEntity.ok("Rezerwacja została utworzona."));
+        admin = new User();
+        admin.setUsername("admin");
+        admin.setEmail("admin@test.com");
+        admin.setPassword(passwordEncoder.encode("password"));
+        admin.setRoles(Set.of(adminRole));
+        userRepository.save(admin);
 
-        mockMvc.perform(post("/api/v1/checkout/reserve/1")
-                        .header("Authorization", "Bearer " + jwtToken))
+        user = new User();
+        user.setUsername("user");
+        user.setEmail("user@test.com");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRoles(Set.of(userRole));
+        userRepository.save(user);
+
+        MvcResult loginResultAdmin = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("admin@test.com", "password"))))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Rezerwacja została utworzona."));
-    }
+                .andReturn();
+        adminJwt = objectMapper.readTree(loginResultAdmin.getResponse().getContentAsString())
+                .get("token").asText();
 
-    @Test
-    void reserveBookCopy_shouldReturnConflict() throws Exception {
-        when(checkoutService.isBookCopyReserved(1)).thenReturn(true);
-
-        mockMvc.perform(post("/api/v1/checkout/reserve/1")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isConflict())
-                .andExpect(content().string("Book copy is already reserved or borrowed."));
-    }
-
-    @Test
-    void getBookCopyStatus_shouldReturnStatus() throws Exception {
-        when(checkoutService.isBookCopyReserved(1)).thenReturn(true);
-        when(checkoutService.isReservedByUser(1, testUser.getUsername())).thenReturn(true);
-        when(checkoutService.isBookCopyLoaned(1)).thenReturn(false);
-
-        mockMvc.perform(get("/api/v1/checkout/bookCopyStatus/1")
-                        .header("Authorization", "Bearer " + jwtToken))
+        MvcResult loginResultUser = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("user@test.com", "password"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.reserved").value(true))
-                .andExpect(jsonPath("$.reservedByCurrentUser").value(true))
-                .andExpect(jsonPath("$.loaned").value(false));
+                .andReturn();
+        userJwt = objectMapper.readTree(loginResultUser.getResponse().getContentAsString())
+                .get("token").asText();
+
+        testBook = Book.builder().title("Wiedźmin").description("Opis").bookCopies(new HashSet<>()).build();
+        testBook = bookRepository.save(testBook);
+
+        testCopy = BookCopy.builder().book(testBook).code("COPY-001").yearPublished(2020).build();
+        testCopy = bookCopyRepository.save(testCopy);
+
+        testReservation = Reservation.builder()
+                .bookCopy(testCopy)
+                .user(user)
+                .startDate(LocalDateTime.now())
+                .expirationDate(LocalDateTime.now().plusDays(3))
+                .build();
+        testReservation = reservationRepository.save(testReservation);
+
+        testLoan = Loan.builder()
+                .bookCopy(testCopy)
+                .user(user)
+                .startDate(LocalDateTime.now())
+                .dueDate(LocalDateTime.now().plusDays(7))
+                .canExtend(true)
+                .build();
+        testLoan = loanRepository.save(testLoan);
     }
 
     @Test
-    void cancelReservation_shouldReturnOk() throws Exception {
-        when(checkoutService.cancelReservation(1, testUser)).thenReturn(true);
+    void reserveBook_success() throws Exception {
+        loanRepository.delete(testLoan);
+        reservationRepository.delete(testReservation);
 
-        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Rezerwacja została anulowana."));
+        CreateReservationDTO dto = new CreateReservationDTO();
+        dto.setUserId(user.getId());
+        dto.setBookCopyId(testCopy.getId());
+
+        mockMvc.perform(post("/api/v1/checkout/reserve")
+                        .header("Authorization", "Bearer " + userJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void cancelReservation_shouldReturnNotFound() throws Exception {
-        when(checkoutService.cancelReservation(1, testUser)).thenReturn(false);
-
-        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Nie znaleziono aktywnej rezerwacji lub brak uprawnień."));
-    }
-
-    @Test
-    void completeReservation_shouldReturnOk() throws Exception {
-        Mockito.doNothing().when(checkoutService).completeReservation(1);
-
-        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Rezerwacja została zakończona i przekształcona w wypożyczenie."));
-    }
-
-    @Test
-    void completeReservation_shouldReturnNotFound() throws Exception {
-        doThrow(new IllegalArgumentException("Rezerwacja nie została znaleziona"))
-                .when(checkoutService).completeReservation(1);
-
-        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Rezerwacja nie została znaleziona"));
-    }
-
-    @Test
-    void returnLoan_shouldReturnOk() throws Exception {
-        when(checkoutService.returnLoan(1)).thenReturn(ResponseEntity.ok("Zwrócono"));
-
-        mockMvc.perform(put("/api/v1/checkout/loans/1/return")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Zwrócono"));
-    }
-
-    @Test
-    void getActiveReservations_shouldReturnOk() throws Exception {
-        when(checkoutService.getActiveReservations())
-                .thenReturn(ResponseEntity.ok(List.of()));
-
+    void getActiveReservations_success() throws Exception {
         mockMvc.perform(get("/api/v1/checkout/reservations")
-                        .header("Authorization", "Bearer " + jwtToken))
+                        .header("Authorization", "Bearer " + userJwt))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void getActiveLoans_shouldReturnOk() throws Exception {
-        when(checkoutService.getActiveLoans()).thenReturn(List.of());
+    void cancelReservation_success() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/cancel", testReservation.getId())
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isOk());
+    }
 
+    @Test
+    void getActiveLoans_success() throws Exception {
         mockMvc.perform(get("/api/v1/checkout/loans")
-                        .header("Authorization", "Bearer " + jwtToken))
+                        .header("Authorization", "Bearer " + userJwt))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void reserveBookCopy_shouldReturnConflict_whenBookIsAlreadyReservedOrLoaned() throws Exception {
-        when(checkoutService.isBookCopyReserved(1)).thenReturn(true);
-        when(checkoutService.isBookCopyLoaned(1)).thenReturn(false);
-
-        mockMvc.perform(post("/api/v1/checkout/reserve/1")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isConflict())
-                .andExpect(content().string("Book copy is already reserved or borrowed."));
+    void extendLoan_success() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/loans/{id}/extend", testLoan.getId())
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void cancelReservation_shouldReturnNotFound_whenNoActiveReservation() throws Exception {
-        when(checkoutService.cancelReservation(eq(1), any(User.class))).thenReturn(false);
-
-        mockMvc.perform(put("/api/v1/checkout/cancelReservation/1")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Nie znaleziono aktywnej rezerwacji lub brak uprawnień."));
+    void completeReservation_adminSuccess() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/confirm", testReservation.getId())
+                        .header("Authorization", "Bearer " + adminJwt))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void completeReservation_shouldReturnNotFound_whenReservationNotFound() throws Exception {
-        doThrow(new IllegalArgumentException("Rezerwacja nie została znaleziona"))
-                .when(checkoutService).completeReservation(1);
+    void returnLoan_adminSuccess() throws Exception {
+        FinishLoanDTO dto = new FinishLoanDTO();
+        dto.setLoanId(testLoan.getId());
+        dto.setEndDate(LocalDateTime.now());
 
-        mockMvc.perform(put("/api/v1/checkout/reservations/1/confirm")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Rezerwacja nie została znaleziona"));
+        mockMvc.perform(put("/api/v1/checkout/loans/return")
+                        .header("Authorization", "Bearer " + adminJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk());
     }
-*/
+
+    @Test
+    void completeReservation_forbiddenForUser() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/confirm", testReservation.getId())
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void returnLoan_forbiddenForUser() throws Exception {
+        FinishLoanDTO dto = new FinishLoanDTO();
+        dto.setLoanId(testLoan.getId());
+        dto.setEndDate(LocalDateTime.now());
+
+        mockMvc.perform(put("/api/v1/checkout/loans/return")
+                        .header("Authorization", "Bearer " + userJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isForbidden());
+    }
 }
+

@@ -30,8 +30,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO addReview(Integer bookId, Integer userId, ReviewCreateDTO dto) {
-
+    public ReviewDTO addReview(Integer bookId, String username, ReviewCreateDTO dto) {
+        Integer userId = userRepository.findUserIdByEmail(username);
         if (reviewRepository.findByBookIdAndUserId(bookId, userId).isPresent()) {
             throw new IllegalStateException("Użytkownik już dodał recenzję dla tej książki.");
         }
