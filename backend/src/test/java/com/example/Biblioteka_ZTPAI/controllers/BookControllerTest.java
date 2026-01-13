@@ -1,192 +1,92 @@
 package com.example.Biblioteka_ZTPAI.controllers;
 
-import com.example.Biblioteka_ZTPAI.models.*;
-import com.example.Biblioteka_ZTPAI.services.JwtService;
+import com.example.Biblioteka_ZTPAI.models.LoginRequest;
+import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
-import com.example.Biblioteka_ZTPAI.services.BookService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-public class BookControllerTest {
-/*
+class BookControllerTest {
+
     @Autowired
-    private MockMvc mockMvc;
+    private WebApplicationContext context;
 
-    @MockBean
-    private BookService bookService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @MockBean
+    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JwtService jwtService;
+    private MockMvc mockMvc;
 
-    private User testUser;
     private String jwtToken;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
-    void setup() {
-        this.testUser = createTestUser();
-        this.jwtToken = generateTokenForUser(testUser);
+    void setup() throws Exception {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("user@user.com");
+        loginRequest.setPassword("user");
+
+        MvcResult result = mockMvc.perform(
+                        post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        jwtToken = objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("token").asText();
     }
-
-    private User createTestUser() {
-        User user = new User();
-        user.setId_user(1);
-        user.setUsername("user");
-        user.setEmail("user@user.com");
-        user.setPassword("user");
-
-        when(userRepository.findByEmail("user@user.com")).thenReturn(Optional.of(user));
-
-        return user;
-    }
-
-    private String generateTokenForUser(com.example.Biblioteka_ZTPAI.models.User user) {
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles("USER")
-                .build();
-
-        return jwtService.generateToken(userDetails);
-    }
-
-    private Genre getSampleGenre() {
-        return new Genre(1, "Fantasy");
-    }
-
-    private Book getSampleBook() {
-        return Book.builder()
-                .idBook(1)
-                .title("Test Book")
-                .genre(getSampleGenre())
-                .cover("http://example.com/cover.jpg")
-                .description("Sample description")
-                .build();
-    }
-
 
     @Test
-    void getBooks_shouldReturnListOfBooks() throws Exception {
-        Mockito.when(bookService.getBooks())
-                .thenReturn(ResponseEntity.ok(Collections.singletonList(getSampleBook())));
-
+    void getBooks_authenticated_success() throws Exception {
         mockMvc.perform(get("/api/v1/books")
                         .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Test Book"))
-                .andExpect(jsonPath("$[0].genre.genre_name").value("Fantasy"));
-    }
-
-
-
-    @Test
-    void getBookById_shouldReturnBook() throws Exception {
-        Book book = getSampleBook();
-        Mockito.when(bookService.getBookById(1))
-                .thenReturn(ResponseEntity.ok(book));
-
-        mockMvc.perform(get("/api/v1/books/{bookId}", 1)
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idBook").value(1))
-                .andExpect(jsonPath("$.title").value("Test Book"))
-                .andExpect(jsonPath("$.genre.genre_name").value("Fantasy"));
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getBookById_shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
-        Mockito.when(bookService.getBookById(99999))
-                .thenReturn(ResponseEntity.notFound().build());
-
-        mockMvc.perform(get("/api/v1/books/{bookId}", 99999)
+    void getBookById_authenticated_success() throws Exception {
+        int testBookId = 1; // upewnij się, że w bazie testowej istnieje książka o ID=1
+        mockMvc.perform(get("/api/v1/books/{bookId}", testBookId)
                         .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteBook_shouldReturnNoContentOnSuccess() throws Exception {
-        Mockito.when(bookService.deleteBook(1))
-                .thenReturn(ResponseEntity.noContent().build());
-
-        mockMvc.perform(delete("/api/v1/books/{bookId}", 1)
+    @WithMockUser(username="user@user.com")
+    void getMyBooks_authenticated_success() throws Exception {
+        mockMvc.perform(get("/api/v1/books/my")
                         .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteBook_shouldReturnNotFoundIfBookDoesNotExist() throws Exception {
-        Mockito.when(bookService.deleteBook(999))
-                .thenReturn(ResponseEntity.notFound().build());
-
-        mockMvc.perform(delete("/api/v1/books/{bookId}", 999)
+    void getReviews_authenticated_success() throws Exception {
+        int testBookId = 1;
+        mockMvc.perform(get("/api/v1/books/{bookId}/reviews", testBookId)
                         .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
-
-    @Test
-    void getBookCopies_shouldReturnCopies() throws Exception {
-        BookCopy copy = new BookCopy();
-        copy.setIdBookCopy(1);
-        copy.setCode("123-456-789");
-
-        Mockito.when(bookService.getBookCopiesByBookId(1))
-                .thenReturn(ResponseEntity.ok(Collections.singletonList(copy)));
-
-        mockMvc.perform(get("/api/v1/books/{bookId}/copies", 1)
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id_book_copy").value(1))
-                .andExpect(jsonPath("$[0].code").value("123-456-789"));
-    }
-
-    @Test
-    void getPublisherByBookCopyId_shouldReturnPublisher() throws Exception {
-        Publisher publisher = new Publisher();
-        publisher.setIdPublishers(1);
-        publisher.setPublishersName("PublisherName");
-
-        Mockito.when(bookService.getPublisherByBookCopyId(1))
-                .thenReturn(ResponseEntity.ok(publisher));
-
-        mockMvc.perform(get("/api/v1/books/copies/{copyId}/publisher", 1)
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id_publishers").value(1))
-                .andExpect(jsonPath("$.publishers_name").value("PublisherName"));
-    }
-
-    @Test
-    void getAuthorsByBookId_shouldReturnAuthors() throws Exception {
-        Author author = new Author(1, "John", "Doe", null);
-
-        Mockito.when(bookService.getAuthorsByBookId(1))
-                .thenReturn(ResponseEntity.ok(Set.of(author)));
-
-        mockMvc.perform(get("/api/v1/books/{bookId}/authors", 1)
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("John"))
-                .andExpect(jsonPath("$[0].surname").value("Doe"));
-    }
-*/
 }
