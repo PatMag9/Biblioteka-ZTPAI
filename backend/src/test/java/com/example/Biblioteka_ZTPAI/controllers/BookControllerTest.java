@@ -51,7 +51,7 @@ class BookControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
         if (userRepository.findByEmail("user@user.com").isEmpty()) {
-            Role userRole = roleRepository.findByName("ROLE_USER")
+            Role userRole = roleRepository.findByName("USER")
                     .orElseGet(() -> roleRepository.save(
                             Role.builder()
                                     .name("USER")
