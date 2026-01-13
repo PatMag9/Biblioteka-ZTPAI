@@ -175,12 +175,13 @@ function BookDetails() {
                 searchRedirectPath="/books"
             />
             <main>
-                <h2>Katalog Biblioteki BiblioSolis</h2>
-                <section className="book-list">
+                <br/><br/>
+                <section className="book-tab">
                     <div className="book-page">
                         <div className="book-info">
                             <div className="book-cover">
-                                {book.cover && <img src={`http://localhost:8080/covers/${book.cover}`} alt="cover_art" />}
+                                {book.cover &&
+                                    <img src={`http://localhost:8080/covers/${book.cover}`} alt="cover_art"/>}
                             </div>
 
                             <div className="book-details">
@@ -303,7 +304,8 @@ function BookDetails() {
                                         <div className="review-header">
                                             {renderStars(review.rating)}
                                             <span className="review-username">{review.username}</span>
-                                            <span className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                            <span
+                                                className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
                                         </div>
                                         <div className="review-text">{review.reviewText}</div>
                                     </li>

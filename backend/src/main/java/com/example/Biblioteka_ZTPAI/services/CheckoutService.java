@@ -94,6 +94,7 @@ public class CheckoutService {
         return reservationRepository.findActiveReservationsWithUserAndBook(search, pageable);
     }
 
+    @Transactional
     public ResponseEntity<?> completeReservation(Integer reservationId) {
 
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -106,7 +107,8 @@ public class CheckoutService {
                 reservation.getUser().getId(),
                 reservation.getBookCopy().getId(),
                 reservation.getStartDate(),
-                LocalDateTime.now().plusWeeks(2)
+                LocalDateTime.now().plusWeeks(2),
+                Boolean.TRUE
         );
 
         Loan loan = loanMapper.toEntity(dto);

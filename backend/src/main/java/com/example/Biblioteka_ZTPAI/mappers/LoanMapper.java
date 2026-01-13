@@ -14,6 +14,7 @@ public interface LoanMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", expression = "java(mapUser(dto.getUserId()))")
     @Mapping(target = "bookCopy", expression = "java(mapBookCopy(dto.getBookCopyId()))")
+    @Mapping(target = "canExtend", source = "canExtend")
     Loan toEntity(CreateLoanDTO dto);
 
     @Mapping(target = "id", source = "id")

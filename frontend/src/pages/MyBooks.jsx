@@ -33,7 +33,7 @@ export default function MyBooks() {
                 setItems(data.content);
                 setIsLoading(false);
             })
-            .catch(err => console.error("Błąd pobierania:", err));
+            .catch(err => console.error("Error:", err));
     }, [navigate]);
 
 
@@ -105,7 +105,7 @@ export default function MyBooks() {
                                 <td className="cover-cell">
                                     <Link to={`/book/${item.bookId}`}>
                                         <img
-                                            src={`http://localhost:8080/covers/${book.cover}`}
+                                            src={`http://localhost:8080/covers/${item.cover}`}
                                             alt="cover"
                                             className="mybooks-cover"
                                         />

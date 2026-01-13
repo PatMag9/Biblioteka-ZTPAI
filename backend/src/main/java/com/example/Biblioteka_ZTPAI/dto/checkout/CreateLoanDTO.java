@@ -16,4 +16,5 @@ public class CreateLoanDTO {
         private Integer bookCopyId;
         private LocalDateTime startDate;
         private LocalDateTime dueDate;
+        private Boolean canExtend;
 }
