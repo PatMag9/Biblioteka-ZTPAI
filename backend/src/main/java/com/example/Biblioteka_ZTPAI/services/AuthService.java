@@ -24,8 +24,8 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
-    private final RabbitTemplate rabbitTemplate;
+    private final AuthenticationManager authenticationManager;//private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+    //private final RabbitTemplate rabbitTemplate;
     private static final String EXCHANGE  = "registerExchange";
     private static final String ROUTING_KEY  = "registerRoutingKey";
     private final RefreshTokenService refreshTokenService;
@@ -46,18 +46,18 @@ public class AuthService {
 
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        LOGGER.info(String.format("Message sent -> %s", request.getEmail()));
-        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, request.getEmail());
+        //LOGGER.info(String.format("Message sent -> %s", request.getEmail()));
+        //rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, request.getEmail());
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
-
+/*
     @RabbitListener(queues = "registerQueue")
     public void reqisterEmail(String email){
         LOGGER.info(String.format("Received message -> %s", email));
     }
-
+*/
     public AuthenticationResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

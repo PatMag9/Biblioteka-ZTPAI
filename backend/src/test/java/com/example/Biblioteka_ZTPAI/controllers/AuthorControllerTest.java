@@ -124,4 +124,30 @@ class AuthorControllerTest {
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void getAuthors_noResults_returnsNoContent() throws Exception {
+        mockMvc.perform(get("/api/v1/authors")
+                        .param("name", "NieistniejacyAutor")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createAuthor_invalidPayload_returnsBadRequest() throws Exception {
+        CreateAuthorDTO dto = new CreateAuthorDTO();
+
+        mockMvc.perform(post("/api/v1/authors")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteAuthor_notFound_returnsNotFound() throws Exception {
+        mockMvc.perform(delete("/api/v1/authors/{id}", 9999)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
+    }
 }

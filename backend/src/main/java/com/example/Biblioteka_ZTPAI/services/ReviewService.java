@@ -9,6 +9,7 @@ import com.example.Biblioteka_ZTPAI.models.User;
 import com.example.Biblioteka_ZTPAI.repositories.BookRepository;
 import com.example.Biblioteka_ZTPAI.repositories.ReviewRepository;
 import com.example.Biblioteka_ZTPAI.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class ReviewService {
     private final ReviewMapper reviewMapper;
 
     public List<ReviewDTO> getReviewsForBook(Integer bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            throw new EntityNotFoundException("Book not found");
+        }
         return reviewMapper.toDTO(reviewRepository.findByBookId(bookId));
     }
 

@@ -257,6 +257,14 @@ class AdminBookControllerTest {
     }
 
     @Test
+    void deleteBookCopy_notFount() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/admin/books/copies/{id}", 9999)
+                        .header("Authorization", "Bearer " + adminJwt))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void deleteBook_success() throws Exception {
 
         bookCopyRepository.delete(testCopy);

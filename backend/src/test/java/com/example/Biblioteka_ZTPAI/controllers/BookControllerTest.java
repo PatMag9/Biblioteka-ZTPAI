@@ -120,6 +120,13 @@ class BookControllerTest {
     }
 
     @Test
+    void getBookById_notFound() throws Exception {
+        mockMvc.perform(get("/api/v1/books/{bookId}", 9999)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @WithMockUser(username="user@user.com")
     void getMyBooks_success() throws Exception {
         mockMvc.perform(get("/api/v1/books/my")
@@ -128,10 +135,23 @@ class BookControllerTest {
     }
 
     @Test
+    void getMyBooks_unauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/books/my"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void getReviews_success() throws Exception {
         mockMvc.perform(get("/api/v1/books/{bookId}/reviews", testBook.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getReviews_bookNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/books/{bookId}/reviews", 9999)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -148,4 +168,53 @@ class BookControllerTest {
                         .content(objectMapper.writeValueAsString(reviewDTO)))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    @WithMockUser(username = "user@user.com")
+    void addReview_bookNotFound() throws Exception {
+        ReviewCreateDTO reviewDTO = new ReviewCreateDTO();
+        reviewDTO.setRating(4);
+        reviewDTO.setReviewText("Test");
+
+        mockMvc.perform(post("/api/v1/books/{bookId}/reviews", 9999)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reviewDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "user@user.com")
+    void addReview_invalidRating() throws Exception {
+        ReviewCreateDTO reviewDTO = new ReviewCreateDTO();
+        reviewDTO.setRating(10);
+        reviewDTO.setReviewText("Niepoprawna ocena");
+
+        mockMvc.perform(post("/api/v1/books/{bookId}/reviews", testBook.getId())
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reviewDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "user@user.com")
+    void addReview_duplicateReview() throws Exception {
+        ReviewCreateDTO reviewDTO = new ReviewCreateDTO();
+        reviewDTO.setRating(5);
+        reviewDTO.setReviewText("Pierwsza recenzja");
+
+        mockMvc.perform(post("/api/v1/books/{bookId}/reviews", testBook.getId())
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reviewDTO)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/books/{bookId}/reviews", testBook.getId())
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reviewDTO)))
+                .andExpect(status().isConflict());
+    }
+
 }

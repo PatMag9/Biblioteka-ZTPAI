@@ -72,7 +72,7 @@ public class CheckoutService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> new NoSuchElementException("Reservation not found"));
 
         if (!reservation.getUser().getId().equals(user.getId()) || reservation.getEndDate() != null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -98,7 +98,7 @@ public class CheckoutService {
     public ResponseEntity<?> completeReservation(Integer reservationId) {
 
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> new NoSuchElementException("Reservation not found"));
 
         reservation.setEndDate(LocalDateTime.now());
         reservationRepository.save(reservation);

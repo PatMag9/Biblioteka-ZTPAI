@@ -122,4 +122,30 @@ class GenreControllerTest {
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void getGenres_noResults_returnsNoContent() throws Exception {
+        mockMvc.perform(get("/api/v1/genres")
+                        .param("name", "NieistniejacyGatunek")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createGenre_invalidPayload_returnsBadRequest() throws Exception {
+        CreateGenreDTO dto = new CreateGenreDTO();
+
+        mockMvc.perform(post("/api/v1/genres")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteGenre_notFound_returnsNotFound() throws Exception {
+        mockMvc.perform(delete("/api/v1/genres/{id}", 9999)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
+    }
 }

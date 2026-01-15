@@ -122,5 +122,31 @@ class PublisherControllerTest {
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void getPublishers_noResults_returnsNoContent() throws Exception {
+        mockMvc.perform(get("/api/v1/publishers")
+                        .param("name", "NieistniejaceWydawnictwo")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void createPublisher_invalidPayload_returnsBadRequest() throws Exception {
+        CreatePublisherDTO dto = new CreatePublisherDTO();
+
+        mockMvc.perform(post("/api/v1/publishers")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deletePublisher_notFound_returnsNotFound() throws Exception {
+        mockMvc.perform(delete("/api/v1/publishers/{id}", 9999)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
+    }
 }
 

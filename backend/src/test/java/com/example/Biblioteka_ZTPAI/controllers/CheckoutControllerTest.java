@@ -211,5 +211,105 @@ class CheckoutControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void reserveBook_bookCopyNotFound() throws Exception {
+        CreateReservationDTO dto = new CreateReservationDTO();
+        dto.setUserId(user.getId());
+        dto.setBookCopyId(9999);
+
+        mockMvc.perform(post("/api/v1/checkout/reserve")
+                        .header("Authorization", "Bearer " + userJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void reserveBook_copyAlreadyReserved_conflict() throws Exception {
+        CreateReservationDTO dto = new CreateReservationDTO();
+        dto.setUserId(user.getId());
+        dto.setBookCopyId(testCopy.getId());
+
+        mockMvc.perform(post("/api/v1/checkout/reserve")
+                        .header("Authorization", "Bearer " + userJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void cancelReservation_notOwnedByUser() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/cancel", testReservation.getId())
+                        .header("Authorization", "Bearer " + adminJwt))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void cancelReservation_notFound() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/cancel", 9999)
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void extendLoan_notOwnedByUser_forbidden() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/loans/{id}/extend", testLoan.getId())
+                        .header("Authorization", "Bearer " + adminJwt))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void extendLoan_alreadyExtended_illegalState() throws Exception {
+        testLoan.setCanExtend(false);
+        loanRepository.save(testLoan);
+
+        mockMvc.perform(put("/api/v1/checkout/loans/{id}/extend", testLoan.getId())
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void extendLoan_notFound() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/loans/{id}/extend", 9999)
+                        .header("Authorization", "Bearer " + userJwt))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void completeReservation_notFound() throws Exception {
+        mockMvc.perform(put("/api/v1/checkout/reservations/{id}/confirm", 9999)
+                        .header("Authorization", "Bearer " + adminJwt))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void returnLoan_notFound() throws Exception {
+        FinishLoanDTO dto = new FinishLoanDTO();
+        dto.setLoanId(9999);
+        dto.setEndDate(LocalDateTime.now());
+
+        mockMvc.perform(put("/api/v1/checkout/loans/return")
+                        .header("Authorization", "Bearer " + adminJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void returnLoan_alreadyReturned_badRequest() throws Exception {
+        testLoan.setEndDate(LocalDateTime.now());
+        loanRepository.save(testLoan);
+
+        FinishLoanDTO dto = new FinishLoanDTO();
+        dto.setLoanId(testLoan.getId());
+        dto.setEndDate(LocalDateTime.now());
+
+        mockMvc.perform(put("/api/v1/checkout/loans/return")
+                        .header("Authorization", "Bearer " + adminJwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
 }
 

@@ -312,7 +312,7 @@ public class BookService {
         Genre genre = null;
         if (dto.getGenreId() != null) {
             genre = genreRepository.findById(dto.getGenreId())
-                    .orElseThrow(() -> new IllegalArgumentException("Genre not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Genre not found"));
         }
 
         Set<Author> authors = new HashSet<>();
@@ -396,7 +396,7 @@ public class BookService {
     public void updateBook(Integer bookId, UpdateBookDTO dto, MultipartFile cover) {
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
         if (dto.getTitle() != null) {
             book.setTitle(dto.getTitle());
@@ -432,7 +432,7 @@ public class BookService {
     public void addBookCopy(Integer bookId, CreateBookCopyDTO dto) {
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
         Publisher publisher = null;
         if (dto.getPublisherId() != null) {
@@ -454,7 +454,7 @@ public class BookService {
     public void updateBookCopy(Integer copyId, UpdateBookCopyDTO dto) {
 
         BookCopy copy = bookCopyRepository.findById(copyId)
-                .orElseThrow(() -> new IllegalArgumentException("Book copy not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book copy not found"));
 
         if (dto.getCode() != null) {
             copy.setCode(dto.getCode());
@@ -477,7 +477,7 @@ public class BookService {
     public void deleteBookCopy(Integer copyId) {
 
         BookCopy copy = bookCopyRepository.findById(copyId)
-                .orElseThrow(() -> new IllegalArgumentException("Book copy not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book copy not found"));
 
         boolean hasActiveLoan = loanRepository.existsByBookCopyAndEndDateIsNull(copy);
         boolean hasActiveReservation = reservationRepository.existsByBookCopyAndEndDateIsNull(copy);
@@ -495,7 +495,7 @@ public class BookService {
     public void deleteBook(Integer bookId) {
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found"));
 
         if (!book.getBookCopies().isEmpty()) {
             throw new IllegalStateException("Cannot delete book with existing copies");
