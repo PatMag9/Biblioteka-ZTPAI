@@ -58,6 +58,7 @@ public class AuthService {
         LOGGER.info(String.format("Received message -> %s", email));
     }
 */
+
     public AuthenticationResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

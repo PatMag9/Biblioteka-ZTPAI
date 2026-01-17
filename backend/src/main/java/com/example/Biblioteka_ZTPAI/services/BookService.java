@@ -317,7 +317,11 @@ public class BookService {
 
         Set<Author> authors = new HashSet<>();
         if (dto.getAuthorIds() != null && !dto.getAuthorIds().isEmpty()) {
-            authors.addAll(authorRepository.findAllById(dto.getAuthorIds()));
+            List<Author> foundAuthors = authorRepository.findAllById(dto.getAuthorIds());
+            if (foundAuthors.size() != dto.getAuthorIds().size()) {
+                throw new NoSuchElementException("One or more authors not found");
+            }
+            authors.addAll(foundAuthors);
         }
 
         String coverFileName = null;
