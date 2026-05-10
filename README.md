@@ -1,63 +1,77 @@
-# Biblioteka-ZTPAI
-## Contents
-* Introduction
-* Used technologies
-* ERD Diagram
-* Features
-* Getting Started
+# Library Management System
+## Overview
 
-## Introduction
-The repository contains an implementation of a project called "BiblioSolis". BiblioSolis is a library web application for reserving and borrowing books.
+Library Management System is a full-stack web application designed to support the management of library processes, including book reservations, loans, and user administration. The system was developed as an engineering thesis project and follows a client–server architecture.
 
-## Used technologies
-Spring Boot
-- Spring Boot was chosen for its comprehensive support in building web applications. It offers seamless SQL database integration (e.g., PostgreSQL) via Spring Data JPA, robust security with Spring Security. Its extensive documentation and wide community support significantly ease development and troubleshooting.
+The system supports role-based access control, JWT authentication, REST API communication, and responsive user interfaces.
 
-Postgres
-- strong open-source database, with community support, robust performance, and extensive features. It also excels in data integrity through ACID compliance, extensibility through various extensions and data types, and scalability.
+# Features
 
-RabbitMQ
-- The message queuing system will enable asynchronous data processing and efficient management of tasks performed in the background.
+## User Features
 
-pgAdmin
-- Selected for easy and complete management of Postgres database
+- User registration and login
+- JWT-based authentication
+- Browse and search the library catalog
+- Filter and sort books list
+- View book details and availability
+- Reserve books
+- Cancel reservations
+- View active reservations and loans
+- Request loan extension
+- Rate and review books
 
-React
-- React was selected for its high performance with dynamic data thanks to the virtual DOM, and for its modularity enabled by functional components and hooks. It allows easy communication with a Spring Boot backend via Fetch API or Axios. Additionally, its large community, extensive tutorials, and ready-made components accelerate development.
+## Administrator Features
 
-## ERD Diagram
+- Access to administrative endpoints
+- Add, edit or delete book information
+- Add, edit or delete book copy information
+- Manage user's active reservations and loans
+- Confirm reservations and loan books
+- Register returned books
+
+# Technologies Used
+
+## Backend
+
+- Java 17
+- Spring Boot
+- PostgreSQL
+- Maven
+- JUnit 5
+
+## Frontend
+
+- React
+- JavaScript
+- Vite
+- CSS
+- HTML
+
+## DevOps & Tools
+
+- Docker
+- Git & GitHub
+- Figma
+
+# System Architecture
+
+The application follows a client–server architecture:
+
+- **frontend** - React application responsible for the user interface.
+- **backend** - REST API built with Spring Boot.
+- **PostgreSQL database** - relational database that stores application data.
+- Docker containers allow simplified deployment and environment consistency.
+
+Communication between frontend and backend is handled through HTTP requests using a REST API.
+
+### Database ERD Diagram
 ![ERD](ERD.png)
 
-## Features
-
-1. **Registration**
-    - User can register to the service.
-
-2. **JWT Authentication**
-    - Session and authentication is managed by JWT token.
-
-3. **RabbitMQ Integration**
-    - After registration a message gets sent to user email.
-
-4. **Browsing the library catalog**
-    - User can browse the wide library catalog.
-
-5. **Reserving books by user**
-    - Users can create reservations on chosen book to borrow it later.
-
-6. **Loaning books by admin**
-    - Admin can loan a book to user who reserved a book.
-
-7. **Returning books by admin**
-    - Admin can set returned book to be available again
-
-## Getting Started
+## Running the Application
 
 ### Prerequisites
 You need the following installed on your computer to run this application:
 - Docker.
-- Java 17 or higher installed.
-- Node.js.
 
 ### Clone the repository
 
@@ -65,7 +79,7 @@ You need the following installed on your computer to run this application:
 git clone https://github.com/PatMag9/Biblioteka-ZTPAI
 ```
 
-##### Build and Run the Application
+### Build and Run the Application
 navigate to application root folder
 ```bash
 cd Biblioteka-ZTPAI
